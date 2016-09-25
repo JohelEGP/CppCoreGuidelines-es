@@ -1,6 +1,6 @@
-# <a name="main"></a>C++ Core Guidelines
+# <a name="main"></a>Pautas centrales de C++
 
-September 4, 2016
+25 de septiembre del 2016
 
 Editors:
 
@@ -12,9 +12,7 @@ Had it been an open source (code) project, this would have been release 0.7.
 Copying, use, modification, and creation of derivative works from this project is licensed under an MIT-style license.
 Contributing to this project requires agreeing to a Contributor License. See the accompanying [LICENSE](LICENSE) file for details.
 We make this project available to "friendly users" to use, copy, modify, and derive from, hoping for constructive input.
-
-Comments and suggestions for improvements are most welcome.
-We plan to modify and extend this document as our understanding improves and the language and the set of available libraries improve.
+Se aprecian mucho los comentarios y sugerencias sobre mejoras. Planeamos modificar y extender este documento a medida que mejore nuestro entendimiento, el lenguaje y el set de bibliotecas disponible.
 When commenting, please note [the introduction](#S-introduction) that outlines our aims and general approach.
 The list of contributors is [here](#SS-ack).
 
@@ -91,44 +89,25 @@ Definitions of terms used to express and discuss the rules, that are not languag
 * resource
 * exception guarantee
 
-# <a name="S-abstract"></a>Abstract
+# <a name="S-abstract"></a>Extracto
 
-This document is a set of guidelines for using C++ well.
-The aim of this document is to help people to use modern C++ effectively.
-By "modern C++" we mean C++11 and C++14 (and soon C++17).
-In other words, what would you like your code to look like in 5 years' time, given that you can start now? In 10 years' time?
+Este documento es un set de pautas para usar bien C++. El objetivo de este documento es ayudar a las personas a usar C++ moderno efectivamente. Por «C++ moderno» nos referimos a C++11 y C++14 (y pronto C++17). En otras palabras, ¿cómo le gustaría que se viera su código dentro de 5 años, dado que puede comenzar ahora? ¿Y a los 10 años?
 
-The guidelines are focused on relatively higher-level issues, such as interfaces, resource management, memory management, and concurrency.
-Such rules affect application architecture and library design.
-Following the rules will lead to code that is statically type safe, has no resource leaks, and catches many more programming logic errors than is common in code today.
-And it will run fast -- you can afford to do things right.
+Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no filtra recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
 
-We are less concerned with low-level issues, such as naming conventions and indentation style.
-However, no topic that can help a programmer is out of bounds.
+Nos preocupamos menos por las cuestiones de bajo nivel, como las convenciones de nombramiento y el estilo de sangría. Sin embargo, ningún tema que pueda ayudar a un programador está fuera de alcance.
 
-Our initial set of rules emphasizes safety (of various forms) and simplicity.
-They may very well be too strict.
-We expect to have to introduce more exceptions to better accommodate real-world needs.
-We also need more rules.
+Nuestro set de reglas inicial enfatiza la seguridad (de varias formas) y simplicidad. Muy bien puede que sean demasiado estrictas. Esperamos tener que introducir más excepciones para acomodar mejor las necesidades del mundo real. También necesitamos más reglas.
 
-You will find some of the rules contrary to your expectations or even contrary to your experience.
-If we haven't suggested you change your coding style in any way, we have failed!
-Please try to verify or disprove rules!
-In particular, we'd really like to have some of our rules backed up with measurements or better examples.
+Encontrará que algunas de las reglas contradicen sus expectativas o incluso su experiencia. ¡Si no hemos sugerido que cambie su manera de codificar de alguna manera, hemos fallado! ¡Por favor, intente verificar o refutar reglas! En particular, realmente nos gustaría que se respalden algunas de nuestras reglas con mediciones o mejores ejemplos.
 
-You will find some of the rules obvious or even trivial.
-Please remember that one purpose of a guideline is to help someone who is less experienced or coming from a different background or language to get up to speed.
+Encontrará algunas de las reglas obvias o incluso triviales. Por favor, recuerde que el propósito de la pauta es ayudar a alguien menos experimentado o con un antecedente o lenguaje diferente para ponerse al día.
 
-Many of the rules are designed to be supported by an analysis tool.
-Violations of rules will be flagged with references (or links) to the relevant rule.
-We do not expect you to memorize all the rules before trying to write code.
-One way of thinking about these guidelines is as a specification for tools that happens to be readable by humans.
+Las reglas están diseñadas para ser respaldadas por herramientas de análisis. La violación de reglas serán marcadas con referencias (o vínculos) a la regla relevante. No esperamos que memorice todas las reglas antes de intentar escribir código. Una forma de ver estas pautas es como una especificación para herramientas que coincidencialmente es legible por humanos.
 
-The rules are meant for gradual introduction into a code base.
-We plan to build tools for that and hope others will too.
+Se pretende que las reglas sean introducidas gradualmente en una base de código. Planeamos construir herramientas para eso y esperamos que otros también.
 
-Comments and suggestions for improvements are most welcome.
-We plan to modify and extend this document as our understanding improves and the language and the set of available libraries improve.
+Se aprecian mucho los comentarios y sugerencias sobre mejoras. Planeamos modificar y extender este documento a medida que mejore nuestro entendimiento, el lenguaje y el set de bibliotecas disponible.
 
 # <a name="S-introduction"></a>In: Introduction
 

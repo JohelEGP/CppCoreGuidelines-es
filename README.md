@@ -1,46 +1,34 @@
-#[C++ Core Guidelines](http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
+#[Pautas centrales de C++](http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
 
->"Within C++ is a smaller, simpler, safer language struggling to get out."
+>«Dentro de C++ hay un lenguaje más pequeño, simple y seguro contendiendo por salir.»
 >-- <cite>Bjarne Stroustrup</cite>
 
-The [C++ Core Guidelines](CppCoreGuidelines.md) are a collaborative effort led by Bjarne Stroustrup, much like the C++ language itself. They are the result of many
-person-years of discussion and design across a number of organizations. Their design encourages general applicability and broad adoption but
-they can be freely copied and modified to meet your organization's needs.
+Las [pautas centrales de C++](CppCoreGuidelines.md) son un esfuerzo colaborativo dirigido por Bjarne Stroustrup, similar al mismo lenguaje C++. Son el resultado de muchas discusiones y diseños por muchas personas a través de un número de organizaciones. Su diseño promueve la aplicabilidad y adopción general, pero su organización tiene la libertad de copiarlas y modificarlas para adaptarlas a sus necesidades.
 
-## Getting started
+## Iniciándose
 
-The guidelines themselves are found at [CppCoreGuidelines](CppCoreGuidelines.md). There is also [a version formatted for browsing] (http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines) that is manually integrated and thus slightly older than the version in the master branch.
+Las pautas se encuentran en [CppCoreGuidelines](CppCoreGuidelines.md). También hay [una versión formateada para navegación] (http://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines) que se integra manualmente y por tanto es un poco más antigua que la versión en la rama master.
 
-Many of the guidelines make use of the header-only Guideline Support Library. One implementation is available at [GSL: Guideline Support Library](https://github.com/Microsoft/GSL).
+Muchas de las pautas utilizan la biblioteca de apoyo a las pautas. Una implementación está disponible en [GSL: Guideline Support Library](https://github.com/Microsoft/GSL).
 
-## Background and scope
+## Fondo y alcance
 
-The aim of the guidelines is to help people to use modern C++ effectively. By "modern C++" we mean C++11 and C++14 (and soon C++17). In other
-words, what would you like your code to look like in 5 years' time, given that you can start now? In 10 years' time?
+El objetivo de las pautas es ayudar a las personas a usar C++ moderno efectivamente. Por «C++ moderno» nos referimos a C++11 y C++14 (y pronto C++17). En otras palabras, ¿cómo le gustaría que se viera su código dentro de 5 años, dado que puede comenzar ahora? ¿Y a los 10 años?
 
-The guidelines are focused on relatively higher-level issues, such as interfaces, resource management, memory management, and concurrency. Such
-rules affect application architecture and library design. Following the rules will lead to code that is statically type-safe, has no resource
-leaks, and catches many more programming logic errors than is common in code today. And it will run fast -- you can afford to do things right.
+Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no filtra recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
 
-We are less concerned with low-level issues, such as naming conventions and indentation style. However, no topic that can help a programmer is
-out of bounds.
+Nos preocupamos menos por las cuestiones de bajo nivel, como las convenciones de nombramiento y el estilo de sangría. Sin embargo, ningún tema que pueda ayudar a un programador está fuera de alcance.
 
-Our initial set of rules emphasizes safety (of various forms) and simplicity. They may very well be too strict. We expect to have to introduce
-more exceptions to better accommodate real-world needs. We also need more rules.
+Nuestro set de reglas inicial enfatizan la seguridad (de varias formas) y simplicidad. Muy bien puede que sean demasiado estrictas. Esperamos tener que introducir más excepciones para acomodar mejor las necesidades del mundo real. También necesitamos más reglas.
 
-You will find some of the rules contrary to your expectations or even contrary to your experience. If we haven't suggested that you change your
-coding style in any way, we have failed! Please try to verify or disprove rules! In particular, we'd really like to have some of our rules
-backed up with measurements or better examples.
+Encontrará que algunas de las reglas contradicen sus expectativas o incluso su experiencia. ¡Si no hemos sugerido que cambie su manera de codificar de alguna manera, hemos fallado! ¡Por favor, intente verificar o refutar reglas! En particular, realmente nos gustaría que se respalden algunas de nuestras reglas con mediciones o mejores ejemplos.
 
-You will find some of the rules obvious or even trivial. Please remember that one purpose of a guideline is to help someone who is less
-experienced or coming from a different background or language to get up to speed.
+Encontrará algunas de las reglas obvias o incluso triviales. Por favor, recuerde que el propósito de la pauta es ayudar a alguien menos experimentado o con un antecedente o lenguaje diferente para ponerse al día.
 
-The rules are designed to be supported by an analysis tool. Violations of rules will be flagged with references (or links) to the relevant rule.
-We do not expect you to memorize all the rules before trying to write code.
+Las reglas están diseñadas para ser respaldadas por herramientas de análisis. La violación de reglas serán marcadas con referencias (o vínculos) a la regla relevante. No esperamos que memorice todas las reglas antes de intentar escribir código.
 
-The rules are meant for gradual introduction into a code base. We plan to build tools for that and hope others will too.
+Se pretende que las reglas sean introducidas gradualmente en una base de código. Planeamos construir herramientas para eso y esperamos que otros también.
 
-## Contributions and LICENSE
+## Contribuciones y licencia
 
-Comments and suggestions for improvements are most welcome. We plan to modify and extend this document as our understanding improves and the
-language and the set of available libraries improve. More details are found at [CONTRIBUTING](./CONTRIBUTING.md) and [LICENSE](./LICENSE) .
+Se aprecian mucho los comentarios y sugerencias sobre mejoras. Planeamos modificar y extender este documento a medida que mejore nuestro entendimiento, el lenguaje y el set de bibliotecas disponible. Más detalles disponibles en [CONTRIBUTING](./CONTRIBUTING.md) y [LICENSE](./LICENSE).
