@@ -18855,127 +18855,127 @@ When is a class a container? ???
 
 Definiciones relativamente informales de la terminología usada en las pautas (basado en el glosario de [Programming: Principles and Practice using C++](http://www.stroustrup.com/programming.html)).
 
-* *clase abstracta*: clase que no puede ser usada directamente para crear objetos; a menudo usada para difinir una interfaz a clases derivadas. Una clase es abstracta si tiene una función virtual pura o solo constructores protegidos.
 * *abstracción*: descripción de algo que selectiva y deliberadamente ignora (oculta) detalles (p. ej., detalles de implementación); ignorancia selectiva.
-* *dirección*: valor que permite encontrar un objeto en la memoria de una computadora.
 * *algoritmo*: procedimiento o fórmula para resolver un problema; serie finita de pasos computacionales que producen un resultado.
 * *alias*: manera alternativa de referirse a un objeto; a menudo un nombre, puntero, o referencia.
+* *ámbito*: región de texto de un programa (código fuente) en la cual se puede referir a un nombre.
 * *aplicación*: programa o colección de programas que es considerada una entidad por sus usuarios.
 * *aproximación*: algo (p. ej., un valor o un diseño) que está cercano al perfecto o ideal. A menudo una aproximación es el resultado de la concesión entre ideales.
+* *archivo*: contenedor de información permanente en una computadora.
+* *archivo fuente*: archivo que contiene código fuente.
+* *archivo objeto*: archivo que contiene código objeto.
 * *argumento*: valor pasado a una función o plantilla, en la cual es accedido mediante un parámetro.
-* *colección*: secuencia de elementos homogéneos, usualmente numerados, p. ej., \[0:max).
 * *aserción*: sentencia insertada en un programa para indicar (afirmar) que algo siempre debe ser verdadero en ese punto del programa.
-* *clase base*: clase usada como la base de una jerarquía de clases. Típicamente, una clase base tiene una o más funciones virtuales.
-* *bit*: la unidad básica de información en una computadora. Un bit puede tener el valor 0 o el valor 1.
+* *biblioteca*: conjunto de tipos, funciones, clases, etc. que implementan un set de facilidades (abstracciones) con la intención de ser potencialmente usada como parte de más de un programa.
 * *bicho*: un error en un programa.
+* *bit*: la unidad básica de información en una computadora. Un bit puede tener el valor 0 o el valor 1.
 * *byte*: la unidad básica de direccionamiento en la mayoría de computadoras. Típicamente, un byte ocupa 8 bits.
+* *cabecera*: archivo que contiene declaraciones usadas para compartir interfaces entre partes de un programa.
+* *cadena*: una secuencia de caracteres.
+* *caso de uso*: uso específico (típicamente simple) de un programa para probar su funcionamiento y demostrar su propósito.
+* *ciclo*: parte de un código ejecutado repetidamente; en C++, típicamente es una sentencia-for o una sentencia-while.
+* *ciclo infinito*: ciclo en el cual la condición de término nunca se vuelve verdadera. Ver iteración.
 * *clase*: tipo definido por el usuario que puede contener datos miembro, funciones miembro, y tipos miembro.
+* *clase abstracta*: clase que no puede ser usada directamente para crear objetos; a menudo usada para difinir una interfaz a clases derivadas. Una clase es abstracta si tiene una función virtual pura o solo constructores protegidos.
+* *clase base*: clase usada como la base de una jerarquía de clases. Típicamente, una clase base tiene una o más funciones virtuales.
+* *clase concreta*: clase de la cual se pueden crear objetos.
+* *clase derivada*: clase que deriva de una o más clases base.
 * *código*: programa o parte de uno; ambiguamente usado como código fuente y código objeto.
+* *código fuente*: código como el producido por un programador y (en principio) legible por otros programadores.
+* *código objeto*: salida de un compilador con la intención de ser la entrada a un enlazador (para que el enlazador produzca código ejecutable).
+* *colección*: secuencia de elementos homogéneos, usualmente numerados, p. ej., \[0:max).
 * *compilador*: programa que transforma el código fuente en código objeto.
 * *complejidad*: noción o medida difícil de definir precisamente de la dificultad de construir la solución a un problema o de la solución misma. A veces, complejidad es usado para (simplemente) referirse a la estimación del número de operaciones necesarias para ejecutar un algoritmo.
 * *computación*: ejecución de algún código, usualmente tomando alguna entrada y produciendo alguna salida.
 * *concepto*: (1) una noción, e idea; (2) un set de requisitos, usualmente para un argumento de plantilla.
-* *clase concreta*: clase de la cual se pueden crear objetos.
+* *concesión*: resultado de balancear muchos criterios de diseño e implementación.
 * *constante*: valor que no puede ser cambiado (en dado ámbito); no mutable.
 * *constructor*: operación que inicializa («construye») un objeto. Típicamente, un constructor establece una invariante y a menudo adquiere recursos necesarios para que el objeto pueda ser usado (los cuales suelen ser liberados en el destructor).
 * *contenedor*: objeto que guarda elementos (otros objetos).
 * *copia*: operación que hace que dos objetos tengan valores que comparen igual. Ver también mueve.
-* *exactitud*: un programa o parte de un programa es exacto si cumple con su especificación. Desafortunadamente, una especificación puede estar incompleta o ser inconsistente, o puede no cumplir con las expectativas razonables de los usuarios. Por tanto, para producir código aceptable, a veces debemos hacer más que tan solo seguir la especificación formal.
 * *costo*: el gasto (p. ej., en tiempo del programador, tiempo de ejecución, o espacio) de producir un programa o ejecutarlo. Idealmente, el costo debería ser una función de la complejidad.
-* *punto de personalización*: ???
 * *datos*: valores usados en una computación.
-* *depurando*: el acto de buscar y deshacer errores de un programa; usualmente menos sistemático que probar.
 * *declaración*: la especificación de un nombre con su tipo en un programa.
 * *definición*: la declaración de una entidad que provee toda la información necesaria para completar un programa que usa la entidad. Definición simplificada: una declaración que asigna memoria.
-* *clase derivada*: clase que deriva de una o más clases base.
-* *diseño*: descripción general de cómo parte de un software debe operar para cumplir con su especificación.
+* *depurando*: el acto de buscar y deshacer errores de un programa; usualmente menos sistemático que probar.
+* *desautorizar*: definir una función en una clase derivada con el mismo nombre y tipos de argumentos que una función virtual en una clase base, haciendo así a la función llamable mediante la interfaz definida por la clase base.
+* *desbordamiento*: producir un valor que no puede ser almacenado en su objetivo previsto.
 * *destructor*: operación invocada (llamada) implícitamente cuando un objeto es destruido (p. ej., al final de un ámbito). A menudo, libera recursos.
-* *encapsulamiento*: proteger algo que ha de ser privado (p. ej., detalles de implementación) de acceso no autorizado.
-* *error*: una diferencia entre la expectativa razonable del comportamiento de un programa (con frecuencia expresado como requisito o la guía de usuarios) y lo que el programa en realidad hace.
+* *dirección*: valor que permite encontrar un objeto en la memoria de una computadora.
+* *diseño*: descripción general de cómo parte de un software debe operar para cumplir con su especificación.
+* *dueño*: objeto responsable por liberar un recurso.
 * *ejecutable*: programa listo para ser corrido (ejecutado) en una computadora.
-* *infiltrado de funcionalidad*: tendencia a añadir exceso de funcionalidad a un programa «por si acaso».
-* *archivo*: contenedor de información permanente en una computadora.
-* *número de coma flotante*: la aproximación de un número real en una computadora, como 7.93 y 10.78e-3.
+* *encapsulamiento*: proteger algo que ha de ser privado (p. ej., detalles de implementación) de acceso no autorizado.
+* *enlazador*: programa que combina archivos de código objeto y bibliotecas en un programa ejecutable.
+* *entero*: un número completo, como 42 y -99.
+* *entrada*: valores usados por una computación (p. ej., argumentos de función y caracteres escritos en un teclado).
+* *error*: una diferencia entre la expectativa razonable del comportamiento de un programa (con frecuencia expresado como requisito o la guía de usuarios) y lo que el programa en realidad hace.
+* *especificación*: descripción de lo que parte de un código debe hacer.
+* *estado*: un set de valores.
+* *estándar*: definición de algo oficialmente acordado, como un lenguaje de programación.
+* *estilo*: set de técnicas de programación que encaminan al uso consistente de las funcionalidades del lenguaje; a veces usado en sentido muy limitado para referirse solo a las reglas de bajo nivel sobre nombramiento y apariencia de código.
+* *exactitud*: un programa o parte de un programa es exacto si cumple con su especificación. Desafortunadamente, una especificación puede estar incompleta o ser inconsistente, o puede no cumplir con las expectativas razonables de los usuarios. Por tanto, para producir código aceptable, a veces debemos hacer más que tan solo seguir la especificación formal.
+* *expresión regular*: notación para patrones en cadenas de caracteres.
 * *función*: unidad de código nombrada que puede ser invocada (llamada) desde diferentes partes de un programa; unidad lógica de computación.
-* *programación genérica*: estilo de programación concentrado en el diseño y la implementación eficiente de algoritmos. Un algoritmo genérico funcionará para todo tipo de argumento que cumpla sus requisitos. En C++, la programación genérica típicamente utiliza plantillas.
-* *variable global*: técnicamente, un objeto nombrado en ámbito de espacio de nombre.
+* *función virtual*: función miembro que puede ser desautorizada en una clase derivada.
+* *función virtual pura*: una función virtual que debe ser desautorizada en una clase derivada.
 * *gestor*: clase que permite el acceso a otra mediante un puntero o referencia miembro. Ver también recurso, copia, mueve.
-* *cabecera*: archivo que contiene declaraciones usadas para compartir interfaces entre partes de un programa.
-* *ocultado*: el acto de prevenir que parte de una información sea directamente vista o accedida. Por ejemplo, un nombre en un ámbito anidado (interior) puede prevenir que el mismo nombre en un ámbito exterior (encerrador) sea directamente usado.
 * *ideal*: versión perfecta de algo por lo que afanamos. Usualmente debemos hacer una concesión y conformarnos con una aproximación.
 * *implementación*: (1) el acto de escribir y probar código; (2) código que implementa un programa.
-* *ciclo infinito*: ciclo en el cual la condición de término nunca se vuelve verdadera. Ver iteración.
-* *recursión infinita*: recursión que no termina hasta que la máquina se queda sin memoria para guardar las llamadas. En realidad, tal recursión nunca es infinita, sino que termina por un error de hardware.
-* *ocultado de información*: el acto de separar la interfaz de la implementación, ocultando así los detalles de implementación no dirigidos al usuario y proveyendo una abstracción.
+* *infiltrado de funcionalidad*: tendencia a añadir exceso de funcionalidad a un programa «por si acaso».
 * *inicializar*: dar a un objeto su valor inicial.
-* *entrada*: valores usados por una computación (p. ej., argumentos de función y caracteres escritos en un teclado).
-* *entero*: un número completo, como 42 y -99.
+* *ininicializado*: estado (indefinido) de un objeto antes de ser inicializado.
 * *interfaz*: declaración o set de declaraciones que especifican cómo parte de un código (como una función o una clase) puede ser llamada.
 * *invariante*: algo que siempre debe ser verdadero en un punto o puntos dados de un programa; típicamente usado para describir el estado (set de valores) de un objeto o el estado de un ciclo antes de entrar a la sentencia repetida.
 * *iteración*: el acto de repetidamente ejecutar parte de un código. Ver recursión.
 * *iterador*: objeto que identifica un elemento de una secuencia.
-* *biblioteca*: conjunto de tipos, funciones, clases, etc. que implementan un set de facilidades (abstracciones) con la intención de ser potencialmente usada como parte de más de un programa.
-* *vida*: tiempo desde la inicialización de un objeto hasta que se vuelve inutilizable (sale de ámbito, es eliminado, o el programa termina).
-* *enlazador*: programa que combina archivos de código objeto y bibliotecas en un programa ejecutable.
+* *lenguaje de programación*: un lenguaje para expresar programas.
 * *literal*: notación que directamente especifica un valor, como 12 especifica el valor entero «doce».
-* *ciclo*: parte de un código ejecutado repetidamente; en C++, típicamente es una sentencia-for o una sentencia-while.
 * *mueve*: operación que transfiere el valor de un objeto a otro dejando atrás un valor que representa «vacío». Ver también copia.
 * *mutable*: cambiable; el opuesto de inmutable, constante, e invariable.
+* *número de coma flotante*: la aproximación de un número real en una computadora, como 7.93 y 10.78e-3.
 * *objeto*: (1) región de memoria inicializada de tipo conocido que contiene un valor de ese tipo; (2) región de memoria.
-* *código objeto*: salida de un compilador con la intención de ser la entrada a un enlazador (para que el enlazador produzca código ejecutable).
-* *archivo objeto*: archivo que contiene código objeto.
-* *programación orientada a objetos*: (POO) estilo de programación que se concentra en el diseño y uso de clases y jerarquías de clases.
+* *ocultado*: el acto de prevenir que parte de una información sea directamente vista o accedida. Por ejemplo, un nombre en un ámbito anidado (interior) puede prevenir que el mismo nombre en un ámbito exterior (encerrador) sea directamente usado.
+* *ocultado de información*: el acto de separar la interfaz de la implementación, ocultando así los detalles de implementación no dirigidos al usuario y proveyendo una abstracción.
 * *operación*: algo que puede realizar alguna acción, como una función o un operador.
-* *salida*: valores producidos por una computación (p. ej., el resultado de una función o líneas de caracteres escritas en pantalla).
-* *desbordamiento*: producir un valor que no puede ser almacenado en su objetivo previsto.
-* *sobrecarga*: definir dos funciones u operadores con el mismo nombre pero diferentes tipos de argumentos (operandos).
-* *desautorizar*: definir una función en una clase derivada con el mismo nombre y tipos de argumentos que una función virtual en una clase base, haciendo así a la función llamable mediante la interfaz definida por la clase base.
-* *dueño*: objeto responsable por liberar un recurso.
+* *palabra*: unidad básica de memoria en una computadora, a menudo la unidad usada para guardar un entero.
 * *paradigma*: término un tanto pretencioso para un estilo de diseño o programación; a menudo usado con la implicación (errónea) de que existe un paradigma que es superior a todos los otros.
 * *parámetro*: declaración de una entrada explícita a una función o plantilla. Cuando es llamada, la función puede acceder a los argumentos pasados a través de los nombres de sus parámetros.
-* *puntero*: (1) valor usado para identificar un objeto con tipo en memoria; (2) variable que contiene tal valor.
+* *plantilla*: clase o función parametrizada por uno o más tipos o valores (en tiempo de compilación); funcionalidad básica del lenguaje C++ que permite la programación genérica.
 * *pos-condición*: condición que debe mantenerse tras la salida de parte de un código, como una función o un ciclo.
 * *pre-condición*: condición que debe mantenerse tras la entrada a parte de un código, como una función o un ciclo.
-* *programa*: código (posiblemente con sus datos asociados) que está lo suficientemente completo como para ser ejecutado por una computadora.
+* *probar*: búsqueda sistemática de errores en un programa.
 * *programación*: el arte de expresar soluciones a problemas en código.
-* *lenguaje de programación*: un lenguaje para expresar programas.
+* *programación genérica*: estilo de programación concentrado en el diseño y la implementación eficiente de algoritmos. Un algoritmo genérico funcionará para todo tipo de argumento que cumpla sus requisitos. En C++, la programación genérica típicamente utiliza plantillas.
+* *programación orientada a objetos*: (POO) estilo de programación que se concentra en el diseño y uso de clases y jerarquías de clases.
+* *programa*: código (posiblemente con sus datos asociados) que está lo suficientemente completo como para ser ejecutado por una computadora.
 * *pseudo-código*: descripción de una computación escrita en notación informal en lugar de un lenguaje de programación.
-* *función virtual pura*: una función virtual que debe ser desautorizada en una clase derivada.
+* *puntero*: (1) valor usado para identificar un objeto con tipo en memoria; (2) variable que contiene tal valor.
+* *punto de personalización*: ???
 * *RAII*: (Resource Acquisition Is Initialization, adquisición de recurso es inicialización) es una técnica básica para la administración de recursos basada en ámbitos.
 * *rango*: secuencia de valores que pueden ser descritos por un punto de inicio y un punto final. Por ejemplo, \[0,5) se refiere a los valores 0, 1, 2, 3, y 4.
-* *expresión regular*: notación para patrones en cadenas de caracteres.
 * *recursión*: el acto de una función llamándose a sí misma. Ver también iteración.
-* *referencia*: (1) valor que describe la ubicación de un valor con tipo en memoria; (2) variable que contiene dicho valor.
-* *requisito*: (1) descripción del comportamiento deseado de un programa o parte de un programa; (2) descripción de los supuestos que una función o plantilla hace de sus argumentos.
+* *recursión infinita*: recursión que no termina hasta que la máquina se queda sin memoria para guardar las llamadas. En realidad, tal recursión nunca es infinita, sino que termina por un error de hardware.
 * *recurso*: algo que es adquirido y posteriormente debe ser liberado, como un gestor de archivo, una cerradura, o memoria. Ver también gestor, dueño.
 * *redondeo*: conversión de un valor al valor matemáticamente más cercano de un tipo con menos precisión.
+* *referencia*: (1) valor que describe la ubicación de un valor con tipo en memoria; (2) variable que contiene dicho valor.
+* *requisito*: (1) descripción del comportamiento deseado de un programa o parte de un programa; (2) descripción de los supuestos que una función o plantilla hace de sus argumentos.
 * *RTTI*: Run-Time Type Information. ???
-* *ámbito*: región de texto de un programa (código fuente) en la cual se puede referir a un nombre.
+* *salida*: valores producidos por una computación (p. ej., el resultado de una función o líneas de caracteres escritas en pantalla).
 * *secuencia*: elementos que pueden ser visitados en orden lineal.
+* *sistema*: (1) programa o set de programas para realizar una tarea en una computadora; (2) abreviación de «sistema operativo», que consiste del ambiente de ejecución y las herramientas fundamentales de una computadora.
+* *sobrecarga*: definir dos funciones u operadores con el mismo nombre pero diferentes tipos de argumentos (operandos).
 * *software*: conjunto de partes de código y datos asociados; a menudo es usado indistintamente como programa.
-* *código fuente*: código como el producido por un programador y (en principio) legible por otros programadores.
-* *archivo fuente*: archivo que contiene código fuente.
-* *especificación*: descripción de lo que parte de un código debe hacer.
-* *estándar*: definición de algo oficialmente acordado, como un lenguaje de programación.
-* *estado*: un set de valores.
 * *STL*: la parte de la librería estándar con los contenedores, iteradores, y algoritmos.
-* *cadena*: una secuencia de caracteres.
-* *estilo*: set de técnicas de programación que encaminan al uso consistente de las funcionalidades del lenguaje; a veces usado en sentido muy limitado para referirse solo a las reglas de bajo nivel sobre nombramiento y apariencia de código.
 * *subtipo*: tipo derivado; tipo que tiene todas las propiedades de un tipo y posiblemente más.
 * *súpertipo*: tipo base; tipo que tiene un subset de las propiedades de un tipo.
-* *sistema*: (1) programa o set de programas para realizar una tarea en una computadora; (2) abreviación de «sistema operativo», que consiste del ambiente de ejecución y las herramientas fundamentales de una computadora.
-* *plantilla*: clase o función parametrizada por uno o más tipos o valores (en tiempo de compilación); funcionalidad básica del lenguaje C++ que permite la programación genérica.
-* *probar*: búsqueda sistemática de errores en un programa.
-* *concesión*: resultado de balancear muchos criterios de diseño e implementación.
-* *truncado*: pérdida de información en una conversión de un tipo a otro que no puede representar exactamente el valor a convertir.
 * *tipo*: algo que define el set de valores posibles y el set de operaciones para un objeto.
-* *ininicializado*: estado (indefinido) de un objeto antes de ser inicializado.
+* *truncado*: pérdida de información en una conversión de un tipo a otro que no puede representar exactamente el valor a convertir.
 * *unidad*: (1) medida estándar que da significado a un valor (p. ej., km para una distancia); (2) parte de un todo que es distinguida (p. ej., nombrada).
-* *caso de uso*: uso específico (típicamente simple) de un programa para probar su funcionamiento y demostrar su propósito.
 * *valor*: set de bits en memoria interpretados de acuerdo a un tipo.
 * *variable*: objeto nombrado de un tipo dado; contiene un valor si no está ininicializado.
-* *función virtual*: función miembro que puede ser desautorizada en una clase derivada.
-* *palabra*: unidad básica de memoria en una computadora, a menudo la unidad usada para guardar un entero.
+* *variable global*: técnicamente, un objeto nombrado en ámbito de espacio de nombre.
+* *vida*: tiempo desde la inicialización de un objeto hasta que se vuelve inutilizable (sale de ámbito, es eliminado, o el programa termina).
 
 # <a name="S-unclassified"></a>To-do: Unclassified proto-rules
 
