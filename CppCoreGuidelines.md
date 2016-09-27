@@ -18897,7 +18897,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *datos*: valores usados en una computación.
 * *declaración*: la especificación de un nombre con su tipo en un programa.
 * *definición*: la declaración de una entidad que provee toda la información necesaria para completar un programa que usa la entidad. Definición simplificada: una declaración que asigna memoria.
-* *depurando*: el acto de buscar y deshacer errores de un programa; usualmente menos sistemático que probar.
+* *depuración*: el acto de buscar y deshacer errores de un programa; usualmente menos sistemático que probar.
 * *desautorizar*: definir una función en una clase derivada con el mismo nombre y tipos de argumentos que una función virtual en una clase base, haciendo así a la función llamable mediante la interfaz definida por la clase base.
 * *desbordamiento*: producir un valor que no puede ser almacenado en su objetivo previsto.
 * *destructor*: operación invocada (llamada) implícitamente cuando un objeto es destruido (p. ej., al final de un ámbito). A menudo, libera recursos.
@@ -18935,8 +18935,8 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *mutable*: cambiable; el opuesto de inmutable, constante, e invariable.
 * *número de coma flotante*: la aproximación de un número real en una computadora, como 7.93 y 10.78e-3.
 * *objeto*: (1) región de memoria inicializada de tipo conocido que contiene un valor de ese tipo; (2) región de memoria.
-* *ocultado*: el acto de prevenir que parte de una información sea directamente vista o accedida. Por ejemplo, un nombre en un ámbito anidado (interior) puede prevenir que el mismo nombre en un ámbito exterior (encerrador) sea directamente usado.
-* *ocultado de información*: el acto de separar la interfaz de la implementación, ocultando así los detalles de implementación no dirigidos al usuario y proveyendo una abstracción.
+* *ocultación*: el acto de prevenir que parte de una información sea directamente vista o accedida. Por ejemplo, un nombre en un ámbito anidado (interior) puede prevenir que el mismo nombre en un ámbito exterior (encerrador) sea directamente usado.
+* *ocultación de información*: el acto de separar la interfaz de la implementación, ocultando así los detalles de implementación no dirigidos al usuario y proveyendo una abstracción.
 * *operación*: algo que puede realizar alguna acción, como una función o un operador.
 * *palabra*: unidad básica de memoria en una computadora, a menudo la unidad usada para guardar un entero.
 * *paradigma*: término un tanto pretencioso para un estilo de diseño o programación; a menudo usado con la implicación (errónea) de que existe un paradigma que es superior a todos los otros.
@@ -18968,9 +18968,9 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *software*: conjunto de partes de código y datos asociados; a menudo es usado indistintamente como programa.
 * *STL*: la parte de la librería estándar con los contenedores, iteradores, y algoritmos.
 * *subtipo*: tipo derivado; tipo que tiene todas las propiedades de un tipo y posiblemente más.
-* *súpertipo*: tipo base; tipo que tiene un subset de las propiedades de un tipo.
+* *supertipo*: tipo base; tipo que tiene un subset de las propiedades de un tipo.
 * *tipo*: algo que define el set de valores posibles y el set de operaciones para un objeto.
-* *truncado*: pérdida de información en una conversión de un tipo a otro que no puede representar exactamente el valor a convertir.
+* *truncante*: pérdida de información en una conversión de un tipo a otro que no puede representar exactamente el valor a convertir.
 * *unidad*: (1) medida estándar que da significado a un valor (p. ej., km para una distancia); (2) parte de un todo que es distinguida (p. ej., nombrada).
 * *valor*: set de bits en memoria interpretados de acuerdo a un tipo.
 * *variable*: objeto nombrado de un tipo dado; contiene un valor si no está ininicializado.
