@@ -25,7 +25,7 @@ Problems:
 
 You can [read an explanation of the scope and structure of this Guide](#S-abstract) or just jump straight in:
 
-* [In: Introduction](#S-introduction)
+* [In: Introducción](#S-introduction)
 * [P: Philosophy](#S-philosophy)
 * [I: Interfaces](#S-interfaces)
 * [F: Functions](#S-functions)
@@ -109,174 +109,119 @@ Se pretende que las reglas sean introducidas gradualmente en una base de código
 
 Se aprecian mucho los comentarios y sugerencias sobre mejoras. Planeamos modificar y extender este documento a medida que mejore nuestro entendimiento, el lenguaje y el set de bibliotecas disponible.
 
-# <a name="S-introduction"></a>In: Introduction
+# <a name="S-introduction"></a>In: Introducción
 
-This is a set of core guidelines for modern C++, C++14, and taking likely future enhancements and taking ISO Technical Specifications (TSs) into account.
-The aim is to help C++ programmers to write simpler, more efficient, more maintainable code.
+Esto es un set de pautas centrales para C++ moderno, C++14, tomando en cuenta posibles mejoras futuras y especificaciones técnicas (ET) de ISO. El propósito es ayudar a los programadores de C++ a escribir código más simple, eficiente y mantenible.
 
-Introduction summary:
+Resumen de la introducción:
 
-* [In.target: Target readership](#SS-readers)
-* [In.aims: Aims](#SS-aims)
-* [In.not: Non-aims](#SS-non)
-* [In.force: Enforcement](#SS-force)
-* [In.struct: The structure of this document](#SS-struct)
-* [In.sec: Major sections](#SS-sec)
+* [In.target: Lector objetivo](#SS-readers)
+* [In.aims: Objetivos](#SS-aims)
+* [In.not: No objetivos](#SS-non)
+* [In.force: Aplicación](#SS-force)
+* [In.struct: La estructura de este documento](#SS-struct)
+* [In.sec: Secciones principales](#SS-sec)
 
-## <a name="SS-readers"></a>In.target: Target readership
+## <a name="SS-readers"></a>In.target: Lector objetivo
 
-All C++ programmers. This includes [programmers who might consider C](#S-cpl).
+Todo programador de C++. Esto incluye [programadores que podrían considerar a C.](#S-cpl).
 
-## <a name="SS-aims"></a>In.aims: Aims
+## <a name="SS-aims"></a>In.aims: Objetivos
 
-The purpose of this document is to help developers to adopt modern C++ (C++11, C++14, and soon C++17) and to achieve a more uniform style across code bases.
+El propósito de este documento es ayudar a los desarrolladores a adoptar C++ moderno (C++11, C++14, y pronto C++17) y conseguir un estilo más uniforme a través de bases de código.
 
-We do not suffer the delusion that every one of these rules can be effectively applied to every code base. Upgrading old systems is hard. However, we do believe that a program that uses a rule is less error-prone and more maintainable than one that does not. Often, rules also lead to faster/easier initial development.
-As far as we can tell, these rules lead to code that performs as well or better than older, more conventional techniques; they are meant to follow the zero-overhead principle ("what you don't use, you don't pay for" or "when you use an abstraction mechanism appropriately, you get at least as good performance as if you had handcoded using lower-level language constructs").
-Consider these rules ideals for new code, opportunities to exploit when working on older code, and try to approximate these ideas as closely as feasible.
-Remember:
+No sufrimos la ilusión de que cada una de estas reglas puede ser aplicada efectivamente a cada base de código. Actualizar sistemas viejos es difícil. Sin embargo, sí creemos que un programa que usa una regla es menos propenso a errores y más mantenible que uno que no. Con frecuencia, las reglas también encaminan a un desarrollo inicial más rápido/fácil.
+Que nosotros sepamos, estas reglas encaminan a código con un desempeño tan bueno o mejor que las técnicas más viejas y convencionales; se supone que sigan el principio de cero-sobregastos («por lo que no usas, no pagas» o «cuando usas un mecanismo de abstracción apropiadamente, recibes al menos tan buen desempeño como si lo hubieras codificado a mano usando construcciones del lenguaje de bajo nivel»).
+Considere estas reglas ideales para código nuevo, oportunidades a explotar cuando trabaje en código viejo, e intente aproximar estos ideales tanto como sea factible.
+Recuerde:
 
-### <a name="R0"></a>In.0: Don't panic!
+### <a name="R0"></a>In.0: ¡No entre en pánico!
 
-Take the time to understand the implications of a guideline rule on your program.
+Tómese el tiempo para entender las implicaciones de una regla en su programa.
 
-These guidelines are designed according to the "subset of superset" principle ([Stroustrup05](#Stroustrup05)).
-They do not simply define a subset of C++ to be used (for reliability, safety, performance, or whatever).
-Instead, they strongly recommend the use of a few simple "extensions" ([library components](#S-gsl))
-that make the use of the most error-prone features of C++ redundant, so that they can be banned (in our set of rules).
+Estas pautas están diseñadas de acuerdo al principio de «subset de superset» ([Stroustrup05](#Stroustrup05)). No simplemente definen un subset de C++ a ser usado (por confiabilidad, seguridad, desempeño, o lo que sea). En su lugar, recomiendan vigorosamente el uso de unas cuantas «extensiones» simples ([componentes de biblioteca](#S-gsl)) que hacen del uso de las funcionalidades más propensa a errores de C++ redundantes, para que puedan ser prohibidas (en nuestro set de reglas).
 
-The rules emphasize static type safety and resource safety.
-For that reason, they emphasize possibilities for range checking, for avoiding dereferencing `nullptr`, for avoiding dangling pointers, and the systematic use of exceptions (via RAII).
-Partly to achieve that and partly to minimize obscure code as a source of errors, the rules also emphasize simplicity and the hiding of necessary complexity behind well-specified interfaces.
+Las reglas enfatizan la seguridad de tipo estática y la seguridad de recursos. Por esa razón, enfatizan las posibilidades para la revisión de rangos, para evitar evitar dereferenciar `nullptr`, para evitar punteros colgados, y el uso sistemático de excepciones (mediante RAII). En parte para lograr eso y en parte para minimizar el código oscuro como fuente de errores, estas reglas enfatizan la simplicidad y la ocultación de complejidad necesaria tras interfaces bien especificadas.
 
-Many of the rules are prescriptive.
-We are uncomfortable with rules that simply state "don't do that!" without offering an alternative.
-One consequence of that is that some rules can be supported only by heuristics, rather than precise and mechanically verifiable checks.
-Other rules articulate general principles. For these more general rules, more detailed and specific rules provide partial checking.
+Muchas de las reglas son preceptivas. Nos sentimos incómodos con reglas que simplemente manifiestan «¡no haga eso!» sin ofrecer una alternativa. Una consecuencia de eso es que algunas reglas solo pueden ser respaldadas por heurísticas, en lugar de chequeos precisos y mecánicamente verificables. Otras reglas articulan principios generales. Para estas reglas más generales, reglas más detalladas y específicas proveen un chequeo parcial.
 
-These guidelines address the core of C++ and its use.
-We expect that most large organizations, specific application areas, and even large projects will need further rules, possibly further restrictions, and further library support.
-For example, hard real-time programmers typically can't use free store (dynamic memory) freely and will be restricted in their choice of libraries.
-We encourage the development of such more specific rules as addenda to these core guidelines.
-Build your ideal small foundation library and use that, rather than lowering your level of programming to glorified assembly code.
+Estas pautas tratan al núcleo de C++ y su uso. Esperamos que la mayoría de organizaciones grandes, áreas de aplicación específicas, e incluso grandes proyectos necesitarán más reglas, posiblemente más restricciones, y más soporte de biblioteca. Por ejemplo, los programadores de tiempo real crítico típicamente no pueden usar el almacenamiento libre (memoria dinámica) con libertad y estarán restringidos en su elección de bibliotecas. Alentamos el desarrollo de tales reglas más específicas como adiciones a estas pautas centrales. Construya y use su pequeña biblioteca fundamental ideal, en lugar de reducir su nivel de programación al glorificado código ensamblador.
 
-The rules are designed to allow [gradual adoption](#S-modernizing).
+Las reglas están diseñadas para permitir su [adopción gradual](#S-modernizing).
 
-Some rules aim to increase various forms of safety while others aim to reduce the likelihood of accidents, many do both.
-The guidelines aimed at preventing accidents often ban perfectly legal C++.
-However, when there are two ways of expressing an idea and one has shown itself a common source of errors and the other has not, we try to guide programmers towards the latter.
+Algunas reglas buscan aumentar varias formas de seguridad mientras que otras buscan reducir la posibilidad de accidentes, muchas hacen ambas. Las pautas que buscan prevenir accidentes con frecuencia prohíben C++ perfectamente legal. Sin embargo, cuando hayan dos maneras de expresar una idea y una ha demostrado ser una fuente común de errores y la otra no, intentamos guiar al programador hacia esta última.
 
-## <a name="SS-non"></a>In.not: Non-aims
+## <a name="SS-non"></a>In.not: No objetivos
 
-The rules are not intended to be minimal or orthogonal.
-In particular, general rules can be simple, but unenforceable.
-Also, it is often hard to understand the implications of a general rule.
-More specialized rules are often easier to understand and to enforce, but without general rules, they would just be a long list of special cases.
-We provide rules aimed at helping novices as well as rules supporting expert use.
-Some rules can be completely enforced, but others are based on heuristics.
+No se tiene la intención de que las reglas sean mínimas u ortogonales. En particular, las reglas generales pueden ser simples, pero inaplicables. Además, suele ser difícil entender las implicaciones de una regla general. Las reglas más especializadas suelen ser más fáciles de entender y aplicar, pero sin reglas generales, simplemente serían una lista larga de casos especiales. Proveemos reglas dirigidas a ayudar a novatos al igual que reglas que apoyen el uso experto. Algunas reglas pueden ser completamente aplicadas, pero otras están basadas en heurísticas.
 
-These rules are not meant to be read serially, like a book.
-You can browse through them using the links.
-However, their main intended use is to be targets for tools.
-That is, a tool looks for violations and the tool returns links to violated rules.
-The rules then provide reasons, examples of potential consequences of the violation, and suggested remedies.
+No se supone que las reglas sean leídas en serie, como un libro. Puede navegar a través de ellas mediante vínculos. Sin embargo, su principal uso intencional es ser objetivos de herramientas. Es decir, una herramienta busca violaciones y le devuelve vínculos a las reglas violadas. Las reglas entonces proveen razones, ejemplos de consecuencias potenciales de la violación, y remedios sugeridos.
 
-These guidelines are not intended to be a substitute for a tutorial treatment of C++.
-If you need a tutorial for some given level of experience, see [the references](#S-references).
+No se tiene la intención de que las pautas sustituyan el tratamiento tutorial de C++. Si necesita un tutorial para un nivel dado de experiencia, vea [las referencias](#S-references).
 
-This is not a guide on how to convert old C++ code to more modern code.
-It is meant to articulate ideas for new code in a concrete fashion.
-However, see [the modernization section](#S-modernizing) for some possible approaches to modernizing/rejuvenating/upgrading.
-Importantly, the rules support gradual adoption: It is typically infeasible to convert all of a large code base at once.
+Esto no es una guía sobre cómo convertir código C++ viejo a código más moderno. La intención es articular ideas para código nuevo de forma concreta. Sin embargo, vea [la sección de modernización](#S-modernizing) para algunos enfoques posibles de modernización/rejuvenecimiento/actualización. Importantemente, las reglas permiten su adopción gradual: típicamente es infactible convertir toda una gran base de código a la vez.
 
-These guidelines are not meant to be complete or exact in every language-technical detail.
-For the final word on language definition issues, including every exception to general rules and every feature, see the ISO C++ standard.
+No se supone que estas pautas estén completas o sean exactas en cada detalle técnico del lenguaje. Para la palabra final sobre cuestiones de definición del lenguaje, incluyendo excepciones a reglas generales y cada funcionalidad, vea el estándar C++ de ISO.
 
-The rules are not intended to force you to write in an impoverished subset of C++.
-They are *emphatically* not meant to define a, say, Java-like subset of C++.
-They are not meant to define a single "one true C++" language.
-We value expressiveness and uncompromised performance.
+No se tiene la intención de que las reglas le fuercen a escribir en un subset de C++ empobrecido. *Enfáticamente* no pretenden definir, digamos, un subset de C++ similar a Java. No se supone que definan el «verdadero» lenguaje C++. Valoramos la expresividad y el rendimiento incomprometido.
 
-The rules are not value-neutral.
-They are meant to make code simpler and more correct/safer than most existing C++ code, without loss of performance.
-They are meant to inhibit perfectly valid C++ code that correlates with errors, spurious complexity, and poor performance.
+El valor de las reglas no es neutral. Su intención es hacer del código más simple y correcto/seguro que la mayoría de código C++ existente, sin pérdida de rendimiento. Implican la prohibición de código C++ perfectamente válido que se correlaciona con errores, complejidad espuria, y rendimiento pobre.
 
-The rules are not perfect.
-A rule can do harm by prohibiting something that is useful in a given situation.
-A rule can do harm by failing to prohibit something that enables a serious error in a given situation.
-A rule can do a lot of harm by being vague, ambiguous, unenforceable, or by enabling every solution to a problem.
-It is impossible to completely meet the "do no harm" criteria.
-Instead, our aim is the less ambitious: "Do the most good for most programmers";
-if you cannot live with a rule, object to it, ignore it, but don't water it down until it becomes meaningless.
-Also, suggest an improvement.
+Las reglas no son perfectas. Una regla puede hacer daño al prohibir algo que es útil en una situación dada. Una regla puede hacer daño al no evitar prohibir algo que permita un error serio en una situación dada. Una regla puede hacer mucho daño al ser vaga, ambigua, inaplicable, y al permitir toda solución a un problema. Es imposible satisfacer completamente los criterios de «no hacer daño». En su lugar, nuestro objetivo es menos ambicioso: «hacer lo más bueno para la mayoría de programadores»; si no puede convivir con una regla, opóngase a esta, ignórela, pero no la agüe hasta que se vuelva insignificante. Además, sugiera una mejora.
 
-## <a name="SS-force"></a>In.force: Enforcement
+## <a name="SS-force"></a>In.force: Aplicación
 
-Rules with no enforcement are unmanageable for large code bases.
-Enforcement of all rules is possible only for a small weak set of rules or for a specific user community.
+Las reglas sin aplicación son inmanejables para las bases de código grandes. La aplicación de todas las reglas es posible solo para un set pequeño y débil de reglas y para una comunidad de usuarios específica.
 
-* But we want lots of rules, and we want rules that everybody can use.
-* But different people have different needs.
-* But people don't like to read lots of rules.
-* But people can't remember many rules.
+* Pero queremos muchas reglas, y queremos reglas que todos puedan usar.
+* Pero personas diferentes tienen necesidades diferentes.
+* Pero a la gente no le gusta leer muchas reglas.
+* Pero la gente no puede recordar muchas reglas.
 
-So, we need subsetting to meet a variety of needs.
+Así que, necesitamos un subset que cumpla una variedad de necesidades.
 
-* But arbitrary subsetting leads to chaos.
+* Pero un subset arbitrario llevaría a un caos.
 
-We want guidelines that help a lot of people, make code more uniform, and strongly encourage people to modernize their code. We want to encourage best practices, rather than leave all to individual choices and management pressures. The ideal is to use all rules; that gives the greatest benefits.
+Queremos pautas que ayuden a muchas personas, hagan el código más uniforme, y fuertemente alienten a la gente a modernizar su código. Queremos alentar las mejores prácticas, en lugar de dejar todo a la elección individual o presiones administrativas. Lo ideal es usar todas las reglas; eso otorga los mejores beneficios.
 
-This adds up to quite a few dilemmas. We try to resolve those using tools. Each rule has an **Enforcement** section listing ideas for enforcement. Enforcement might be by code review, by static analysis, by compiler, or by run-time checks. Wherever possible, we prefer "mechanical" checking (humans are slow, inaccurate, and bore easily) and static checking. Run-time checks are suggested only rarely where no alternative exists; we do not want to introduce "distributed fat". Where appropriate, we label a rule (in the **Enforcement** sections) with the name of groups of related rules (called "profiles"). A rule can be part of several profiles, or none. For a start, we have a few profiles corresponding to common needs (desires, ideals):
+Esto conlleva a unos cuantos dilemas. Intentamos resolverlos usando herramientas. Cada regla tiene una sección de **aplicación** donde se listan ideas para su aplicación. La aplicación podría hacerse por revisión de código, por análisis estático, por el compilador, o por chequeos en tiempo de ejecución. Siempre que sea posible, preferimos el chequeado «mecánico» (los humanos son lentos, imprecisos, y se aburren fácilmente) y chequeado estático. Los chequeos en tiempo de ejecución se sugieren solo en el raro caso de que no exista alternativa; no queremos introducir «grasa distribuida». Cuando sea apropiado, etiquetamos a una regla (en la sección de **aplicación**) con el nombre de grupos de reglas relacionadas (llamados «perfiles»). Una regla puede ser parte de muchos perfiles, o de ninguno. Para comenzar, tenemos unos cuantos perfiles correspondientes a necesidades (deseos, ideales) comunes:
 
-* **type**: No type violations (reinterpreting a `T` as a `U` through casts, unions, or varargs)
-* **bounds**: No bounds violations (accessing beyond the range of an array)
-* **lifetime**: No leaks (failing to `delete` or multiple `delete`) and no access to invalid objects (dereferencing `nullptr`, using a dangling reference).
+* **tipo**: Sin violaciones de tipo (reinterpretación de `T` como una `U` mediante moldes, uniones, o varargs).
+* **bordes**: Sin violaciones de bordes (acceder más allá del rango de una colección).
+* **vida**: Sin filtros (no hacer un `delete` o hacer múltiples `delete`) y sin acceso a objetos inválidos (dereferenciar `nullptr`, usar una referencia colgada).
 
-The profiles are intended to be used by tools, but also serve as an aid to the human reader.
-We do not limit our comment in the **Enforcement** sections to things we know how to enforce; some comments are mere wishes that might inspire some tool builder.
+La intención de los perfiles es ser usados por herramientas, pero también son de ayuda al lector humano. No limitamos nuestro comentario en las secciones de **aplicación** a las cosas que sabemos aplicar; algunos comentarios no son más que deseos que podrían inspirar a un constructor de herramienta.
 
-Tools that implement these rules shall respect the following syntax to explicitly suppress a rule:
+Las herramientas que implementen estas reglas deberán respetar la siguiente sintaxis para suprimir explícitamente una regla:
 
-    [[suppress(tag)]]
+    [[suppress(etiqueta)]]
 
-where "tag" is the anchor name of the item where the Enforcement rule appears (e.g., for [C.134](#Rh-public) it is "Rh-public"), the
-name of a profile group-of-rules ("type", "bounds", or "lifetime"),
-or a specific rule in a profile ([type.4](#Pro-type-cstylecast), or [bounds.2](#Pro-bounds-arrayindex)).
+Donde «etiqueta» es el nombre de ancla del ítem donde la regla de aplicación aparece (p. ej., para [C.134](#Rh-public) es «Rh-public»), el nombre de un perfil en inglés («type», «bounds», y «lifetime» para tipo, bordes y vida respectivamente), o una regla específica en un perfil ([type.4](#Pro-type-cstylecast), o [bounds.2](#Pro-bounds-arrayindex)).
 
-## <a name="SS-struct"></a>In.struct: The structure of this document
+## <a name="SS-struct"></a>In.struct: La estructura de este documento
 
-Each rule (guideline, suggestion) can have several parts:
+Cada regla (pauta, sugerencia) puede tener muchas partes:
 
-* The rule itself -- e.g., **no naked `new`**
-* A rule reference number -- e.g., **C.7** (the 7th rule related to classes).
-  Since the major sections are not inherently ordered, we use a letter as the first part of a rule reference "number".
-  We leave gaps in the numbering to minimize "disruption" when we add or remove rules.
-* **Reason**s (rationales) -- because programmers find it hard to follow rules they don't understand
-* **Example**s -- because rules are hard to understand in the abstract; can be positive or negative
-* **Alternative**s -- for "don't do this" rules
-* **Exception**s -- we prefer simple general rules. However, many rules apply widely, but not universally, so exceptions must be listed
-* **Enforcement** -- ideas about how the rule might be checked "mechanically"
-* **See also**s -- references to related rules and/or further discussion (in this document or elsewhere)
-* **Note**s (comments) -- something that needs saying that doesn't fit the other classifications
-* **Discussion** -- references to more extensive rationale and/or examples placed outside the main lists of rules
+* La regla misma -- p. ej., **no `new` desnudo**.
+* Un número de referencia a regla -- p. ej., **C.7** (la 7ma regla relacionada con clases). Ya que las secciones principales no están inherentemente ordenadas, usamos letras como la primera parte del «número» de referencia a regla. Dejamos saltos en el numerado para minimizar la «disrupción» cuando agregamos y quitamos reglas.
+* **Razón**(es) (razonamientos) -- porque los programadores encuentran difícil seguir reglas que no entienden.
+* **Ejemplo**(s) -- porque las reglas son difíciles de entender en lo abstracto; puede ser positivo o negativo.
+* **Alternativa**(s) -- para reglas de tipo «no haga esto».
+* **Excepción**(es) -- preferimos reglas generales simples. Sin embargo, muchas reglas aplican ampliamente, pero no universalmente, así que deben de listarse excepciones.
+* **Aplicación** -- ideas sobre cómo una regla podría ser chequeada «mecánicamente».
+* **Ver también** -- referencias a reglas relacionadas y/o discusión adicional (en este documento u otro lugar).
+* **Nota**(s) (comentarios) -- algo que necesita decirse que no encaja en otra clasificación.
+* **Discusión** -- referencias a razonamientos más extensivos y/o ejemplos situados fuera de las listas principales de reglas.
 
-Some rules are hard to check mechanically, but they all meet the minimal criteria that an expert programmer can spot many violations without too much trouble.
-We hope that "mechanical" tools will improve with time to approximate what such an expert programmer notices.
-Also, we assume that the rules will be refined over time to make them more precise and checkable.
+Algunas reglas son difíciles de chequear mecánicamente, pero todas cumplen el criterio mínimo de que un programador experto puede identificar muchas violaciones sin mucho problema. Esperamos que las herramientas «mecánicas» mejoren con el tiempo para aproximar lo que dicho programador experto notaría. Además, asumimos que las reglas serán refinadas a través del tiempo para hacerlas más precisas y chequeables.
 
-A rule is aimed at being simple, rather than carefully phrased to mention every alternative and special case.
-Such information is found in the **Alternative** paragraphs and the [Discussion](#S-discussion) sections.
-If you don't understand a rule or disagree with it, please visit its **Discussion**.
-If you feel that a discussion is missing or incomplete, enter an [Issue](https://github.com/isocpp/CppCoreGuidelines/issues)
-explaining your concerns and possibly a corresponding PR.
+Es intencional que las reglas sean simples, en lugar de cuidadosamente fraseadas para mencionar cada alternativa y caso especial. Tal información puede encontrarse en las secciones de **alternativa**s y de [discusión](#S-discussion). Si no entiende una regla o está en desacuerdo con esta, por favor visite su **discusión**. Si siente que a una discusión le hace falta o está incompleta, entre una [cuestión](https://github.com/isocpp/CppCoreGuidelines/issues) explicando sus preocupaciones y posiblemente una solicitud de halado correspondiente.
 
-This is not a language manual.
-It is meant to be helpful, rather than complete, fully accurate on technical details, or a guide to existing code.
-Recommended information sources can be found in [the references](#S-references).
+Esto no es un manual del lenguaje. Se supone que sea de ayuda, más que completo, totalmente preciso con los detalles técnicos, o una guía para código existente. Puede encontrar fuentes de información recomendadas en [las referencias](#S-references).
 
-## <a name="SS-sec"></a>In.sec: Major sections
+## <a name="SS-sec"></a>In.sec: Secciones principales
 
-* [In: Introduction](#S-introduction)
+* [In: Introducción](#S-introduction)
 * [P: Philosophy](#S-philosophy)
 * [I: Interfaces](#S-interfaces)
 * [F: Functions](#S-functions)
@@ -295,7 +240,7 @@ Recommended information sources can be found in [the references](#S-references).
 * [GSL: Guideline support library](#S-gsl)
 * [FAQ: Answers to frequently asked questions](#S-faq)
 
-Supporting sections:
+Secciones de soporte:
 
 * [NL: Naming and layout](#S-naming)
 * [Per: Performance](#S-performance)
@@ -307,10 +252,9 @@ Supporting sections:
 * [Glosario](#S-glossary)
 * [To-do: Unclassified proto-rules](#S-unclassified)
 
-These sections are not orthogonal.
+Estas secciones no son ortogonales.
 
-Each section (e.g., "P" for "Philosophy") and each subsection (e.g., "C.hier" for "Class Hierarchies (OOP)") have an abbreviation for ease of searching and reference.
-The main section abbreviations are also used in rule numbers (e.g., "C.11" for "Make concrete types regular").
+Cada sección (p. ej., «P» para «Filosofía») y cada subsección (p. ej., «C.hier» para «Jerarquías de clase (POO)») tiene una abreviación para facilitar la búsqueda y referencia. Las abreviaturas de sección principal también son usadas en números de regla (p. ej., «C.11» para «Haga regular los tipos concretos»).
 
 # <a name="S-philosophy"></a>P: Philosophy
 
