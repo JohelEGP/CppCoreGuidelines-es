@@ -224,19 +224,9 @@ So, we need subsetting to meet a variety of needs.
 
 * But arbitrary subsetting leads to chaos.
 
-We want guidelines that help a lot of people, make code more uniform, and strongly encourage people to modernize their code.
-We want to encourage best practices, rather than leave all to individual choices and management pressures.
-The ideal is to use all rules; that gives the greatest benefits.
+We want guidelines that help a lot of people, make code more uniform, and strongly encourage people to modernize their code. We want to encourage best practices, rather than leave all to individual choices and management pressures. The ideal is to use all rules; that gives the greatest benefits.
 
-This adds up to quite a few dilemmas.
-We try to resolve those using tools.
-Each rule has an **Enforcement** section listing ideas for enforcement.
-Enforcement might be by code review, by static analysis, by compiler, or by run-time checks.
-Wherever possible, we prefer "mechanical" checking (humans are slow, inaccurate, and bore easily) and static checking.
-Run-time checks are suggested only rarely where no alternative exists; we do not want to introduce "distributed fat".
-Where appropriate, we label a rule (in the **Enforcement** sections) with the name of groups of related rules (called "profiles").
-A rule can be part of several profiles, or none.
-For a start, we have a few profiles corresponding to common needs (desires, ideals):
+This adds up to quite a few dilemmas. We try to resolve those using tools. Each rule has an **Enforcement** section listing ideas for enforcement. Enforcement might be by code review, by static analysis, by compiler, or by run-time checks. Wherever possible, we prefer "mechanical" checking (humans are slow, inaccurate, and bore easily) and static checking. Run-time checks are suggested only rarely where no alternative exists; we do not want to introduce "distributed fat". Where appropriate, we label a rule (in the **Enforcement** sections) with the name of groups of related rules (called "profiles"). A rule can be part of several profiles, or none. For a start, we have a few profiles corresponding to common needs (desires, ideals):
 
 * **type**: No type violations (reinterpreting a `T` as a `U` through casts, unions, or varargs)
 * **bounds**: No bounds violations (accessing beyond the range of an array)
