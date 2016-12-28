@@ -124,7 +124,7 @@ Resumen de la introducción:
 
 ## <a name="SS-readers"></a>In.target: Lector objetivo
 
-Todo programador de C++. Esto incluye [programadores que podrían considerar a C.](#S-cpl).
+Todo programador de C++. Esto incluye [programadores que podrían considerar a C](#S-cpl).
 
 ## <a name="SS-aims"></a>In.aims: Objetivos
 
@@ -182,7 +182,7 @@ Así que, necesitamos un subset que cumpla una variedad de necesidades.
 
 * Pero un subset arbitrario llevaría a un caos.
 
-Queremos pautas que ayuden a muchas personas, hagan el código más uniforme, y fuertemente alienten a la gente a modernizar su código. Queremos alentar las mejores prácticas, en lugar de dejar todo a la elección individual o presiones administrativas. Lo ideal es usar todas las reglas; eso otorga los mejores beneficios.
+Queremos pautas que ayuden a muchas personas, hagan el código más uniforme, y alienten fuertemente a la gente a modernizar su código. Queremos alentar las mejores prácticas, en lugar de dejar todo a la elección individual o presiones administrativas. Lo ideal es usar todas las reglas; eso otorga los mejores beneficios.
 
 Esto conlleva a unos cuantos dilemas. Intentamos resolverlos usando herramientas. Cada regla tiene una sección de **aplicación** donde se listan ideas para su aplicación. La aplicación podría hacerse por revisión de código, por análisis estático, por el compilador, o por chequeos en tiempo de ejecución. Siempre que sea posible, preferimos el chequeado «mecánico» (los humanos son lentos, imprecisos, y se aburren fácilmente) y chequeado estático. Los chequeos en tiempo de ejecución se sugieren solo en el raro caso de que no exista alternativa; no queremos introducir «grasa distribuida». Cuando sea apropiado, etiquetamos a una regla (en la sección de **aplicación**) con el nombre de grupos de reglas relacionadas (llamados «perfiles»). Una regla puede ser parte de muchos perfiles, o de ninguno. Para comenzar, tenemos unos cuantos perfiles correspondientes a necesidades (deseos, ideales) comunes:
 
@@ -18906,7 +18906,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *archivo fuente*: archivo que contiene código fuente.
 * *archivo objeto*: archivo que contiene código objeto.
 * *argumento*: valor pasado a una función o plantilla, en la cual es accedido mediante un parámetro.
-* *aserción*: sentencia insertada en un programa para indicar (afirmar) que algo siempre debe ser verdadero en ese punto del programa.
+* *aserción*: sentencia insertada en un programa para manifestar (afirmar) que algo siempre debe ser verdadero en ese punto del programa.
 * *biblioteca*: conjunto de tipos, funciones, clases, etc. que implementan un set de facilidades (abstracciones) con la intención de ser potencialmente usada como parte de más de un programa.
 * *bicho*: un error en un programa.
 * *bit*: la unidad básica de información en una computadora. Un bit puede tener el valor 0 o el valor 1.
@@ -18924,7 +18924,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *código*: programa o parte de uno; ambiguamente usado como código fuente y código objeto.
 * *código fuente*: código como el producido por un programador y (en principio) legible por otros programadores.
 * *código objeto*: salida de un compilador con la intención de ser la entrada a un enlazador (para que el enlazador produzca código ejecutable).
-* *colección*: secuencia de elementos homogéneos, usualmente numerados, p. ej., \[0:max).
+* *colección*: secuencia homogénea de elementos, usualmente numerados, p. ej., \[0:max).
 * *compilador*: programa que transforma el código fuente en código objeto.
 * *complejidad*: noción o medida difícil de definir precisamente de la dificultad de construir la solución a un problema o de la solución misma. A veces, complejidad es usado para (simplemente) referirse a la estimación del número de operaciones necesarias para ejecutar un algoritmo.
 * *computación*: ejecución de algún código, usualmente tomando alguna entrada y produciendo alguna salida.
@@ -18950,7 +18950,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *enlazador*: programa que combina archivos de código objeto y bibliotecas en un programa ejecutable.
 * *entero*: un número completo, como 42 y -99.
 * *entrada*: valores usados por una computación (p. ej., argumentos de función y caracteres escritos en un teclado).
-* *error*: una diferencia entre la expectativa razonable del comportamiento de un programa (con frecuencia expresado como requisito o la guía de usuarios) y lo que el programa en realidad hace.
+* *error*: una diferencia entre la expectativa razonable del comportamiento de un programa (con frecuencia expresado como requisito o guía de usuario) y lo que el programa en realidad hace.
 * *especificación*: descripción de lo que parte de un código debe hacer.
 * *estado*: un set de valores.
 * *estándar*: definición de algo oficialmente acordado, como un lenguaje de programación.
@@ -18968,7 +18968,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *ininicializado*: estado (indefinido) de un objeto antes de ser inicializado.
 * *interfaz*: declaración o set de declaraciones que especifican cómo parte de un código (como una función o una clase) puede ser llamada.
 * *invariante*: algo que siempre debe ser verdadero en un punto o puntos dados de un programa; típicamente usado para describir el estado (set de valores) de un objeto o el estado de un ciclo antes de entrar a la sentencia repetida.
-* *iteración*: el acto de repetidamente ejecutar parte de un código. Ver recursión.
+* *iteración*: el acto de ejecutar repetidamente parte de un código. Ver recursión.
 * *iterador*: objeto que identifica un elemento de una secuencia.
 * *lenguaje de programación*: un lenguaje para expresar programas.
 * *literal*: notación que directamente especifica un valor, como 12 especifica el valor entero «doce».
@@ -18983,8 +18983,8 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *paradigma*: término un tanto pretencioso para un estilo de diseño o programación; a menudo usado con la implicación (errónea) de que existe un paradigma que es superior a todos los otros.
 * *parámetro*: declaración de una entrada explícita a una función o plantilla. Cuando es llamada, la función puede acceder a los argumentos pasados a través de los nombres de sus parámetros.
 * *plantilla*: clase o función parametrizada por uno o más tipos o valores (en tiempo de compilación); funcionalidad básica del lenguaje C++ que permite la programación genérica.
-* *pos-condición*: condición que debe mantenerse tras la salida de parte de un código, como una función o un ciclo.
-* *pre-condición*: condición que debe mantenerse tras la entrada a parte de un código, como una función o un ciclo.
+* *pos-condición*: condición que debe darse tras la salida de parte de un código, como una función o un ciclo.
+* *pre-condición*: condición que debe darse tras la entrada a parte de un código, como una función o un ciclo.
 * *probar*: búsqueda sistemática de errores en un programa.
 * *programación*: el arte de expresar soluciones a problemas en código.
 * *programación genérica*: estilo de programación concentrado en el diseño y la implementación eficiente de algoritmos. Un algoritmo genérico funcionará para todo tipo de argumento que cumpla sus requisitos. En C++, la programación genérica típicamente utiliza plantillas.
