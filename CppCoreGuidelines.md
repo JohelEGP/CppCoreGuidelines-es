@@ -209,7 +209,7 @@ Cada regla (pauta, sugerencia) puede tener muchas partes:
 * **Alternativa**(s) -- para reglas de tipo «no haga esto».
 * **Excepción**(es) -- preferimos reglas generales simples. Sin embargo, muchas reglas aplican ampliamente, pero no universalmente, así que deben de listarse excepciones.
 * **Aplicación** -- ideas sobre cómo una regla podría ser chequeada «mecánicamente».
-* **Ver también** -- referencias a reglas relacionadas y/o discusión adicional (en este documento u otro lugar).
+* **Vea también** -- referencias a reglas relacionadas y/o discusión adicional (en este documento u otro lugar).
 * **Nota**(s) (comentarios) -- algo que necesita decirse que no encaja en otra clasificación.
 * **Discusión** -- referencias a razonamientos más extensivos y/o ejemplos situados fuera de las listas principales de reglas.
 
@@ -19007,7 +19007,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *sistema*: (1) programa o set de programas para realizar una tarea en una computadora; (2) abreviación de «sistema operativo», que consiste del ambiente de ejecución y las herramientas fundamentales de una computadora.
 * *sobrecarga*: definir dos funciones u operadores con el mismo nombre pero diferentes tipos de argumentos (operandos).
 * *software*: conjunto de partes de código y datos asociados; a menudo es usado indistintamente como programa.
-* *STL*: la parte de la librería estándar con los contenedores, iteradores, y algoritmos.
+* *STL*: la parte de la biblioteca estándar con los contenedores, iteradores, y algoritmos.
 * *subtipo*: tipo derivado; tipo que tiene todas las propiedades de un tipo y posiblemente más.
 * *supertipo*: tipo base; tipo que tiene un subset de las propiedades de un tipo.
 * *tipo*: algo que define el set de valores posibles y el set de operaciones para un objeto.
