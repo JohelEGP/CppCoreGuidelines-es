@@ -17438,131 +17438,112 @@ If code is using an unmodified standard library, then there are still workaround
 
 ???
 
-# <a name="S-gsl"></a>GSL: Guideline support library
+# <a name="S-gsl"></a>GSL: Biblioteca de apoyo a las pautas
 
-The GSL is a small library of facilities designed to support this set of guidelines.
-Without these facilities, the guidelines would have to be far more restrictive on language details.
+La GSL es una biblioteca pequeña de facilidades diseñadas para apoyar este set de pautas. Sin estas facilidades, las pautas tendrían que ser mucho más restrictivas con los detalles del lenguaje.
 
-The Core Guidelines support library is defined in namespace `gsl` and the names may be aliases for standard library or other well-known library names. Using the (compile-time) indirection through the `gsl` namespace allows for experimentation and for local variants of the support facilities.
+La biblioteca de apoyo de las pautas centrales está definida en el espacio de nombre `gsl` y los nombres podrían ser alias de nombres de la biblioteca estándar u otras bibliotecas bien conocidas. El uso de la indirección (en tiempo de compilación) a través del espacio de nombre `gsl` permite experimentar y tener variantes locales de las facilidades de apoyo.
 
-The GSL is header only, and can be found at [GSL: Guideline support library](https://github.com/Microsoft/GSL).
-The support library facilities are designed to be extremely lightweight (zero-overhead) so that they impose no overhead compared to using conventional alternatives.
-Where desirable, they can be "instrumented" with additional functionality (e.g., checks) for tasks such as debugging.
+La GSL es todo cabecera, y puede ser encontrada en [GSL: Guideline support library](https://github.com/Microsoft/GSL). Las facilidades de la biblioteca de soporte están diseñadas para ser extremadamente ligeras (cero-sobregastos) para que no impongan sobregastos comparadas con usar alternativas convencionales. Cuando sea deseable, pueden ser «instrumentadas»» con funcionalidad adicional (p. ej., chequeos) para tareas tal como depuración.
 
-These Guidelines assume a `variant` type, but this is not currently in GSL.
-Eventually, use [the one voted into C++17](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0088r3.html).
+Estas pautas asumen un tipo `variant`, pero actualmente esto no se encuentra en GSL. Eventualmente, use [la votada en C++17](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0088r3.html).
 
-Summary of GSL components:
+Resumen de los componentes de GSL:
 
-* [GSL.view: Views](#SS-views)
+* [GSL.view: Vistas](#SS-views)
 * [GSL.owner](#SS-ownership)
-* [GSL.assert: Assertions](#SS-assertions)
-* [GSL.util: Utilities](#SS-utilities)
-* [GSL.concept: Concepts](#SS-gsl-concepts)
+* [GSL.assert: Aserciones](#SS-assertions)
+* [GSL.util: Utilidades](#SS-utilities)
+* [GSL.concept: Conceptos](#SS-gsl-concepts)
 
-We plan for a "ISO C++ standard style" semi-formal specification of the GSL.
+Planeamos tener una especificación semi-formal «estilo estándar ISO C++» de la GSL.
 
-We rely on the ISO C++ standard library and hope for parts of the GSL to be absorbed into the standard library.
+Dependemos de la biblioteca estándar ISO C++ y esperamos que partes de la GSL sean absorbidas a la biblioteca estándar.
 
-## <a name="SS-views"></a>GSL.view: Views
+## <a name="SS-views"></a>GSL.view: Vistas
 
-These types allow the user to distinguish between owning and non-owning pointers and between pointers to a single object and pointers to the first element of a sequence.
+Estos tipos permiten al usuario distinguir entre punteros dueño y no-dueño y entre punteros a un solo objeto y punteros al primer elemento de una secuencia.
 
-These "views" are never owners.
+Estas «vistas» nunca son dueñas.
 
-References are never owners.
+Las referencias nunca son dueñas.
 
-The names are mostly ISO standard-library style (lower case and underscore):
+Los nombres mayormente siguen el estilo biblioteca-estándar ISO (minúsculas y guión bajo):
 
-* `T*`      // The `T*` is not an owner, may be null; assumed to be pointing to a single element.
-* `T&`      // The `T&` is not an owner and can never be a "null reference"; references are always bound to objects.
+* `T*`      // La `T*` no es una dueña, puede ser nula; se asume que apunta a un solo elemento.
+* `T&`      // La `T&` no es una dueña y nunca puede ser una «referencia nula»; las referencias siempre están atadas a objetos.
 
-The "raw-pointer" notation (e.g. `int*`) is assumed to have its most common meaning; that is, a pointer points to an object, but does not own it.
-Owners should be converted to resource handles (e.g., `unique_ptr` or `vector<T>`) or marked `owner<T*>`
+Se asume que la notación de «puntero crudo» (p. ej., `int*`) tiene su significado más común; es decir, un puntero que apunta a un objeto, pero no lo posee. Los dueños deben ser convertidos a gestores de recursos (p. ej., `unique_ptr` o `vector<T>`) o marcados `owner<T*>`.
 
-* `owner<T*>`   // a `T*`that owns the object pointed/referred to; may be `nullptr`.
-* `owner<T&>`   // a `T&` that owns the object pointed/referred to.
+* `owner<T*>`   // Una `T*` que posee el objeto apuntado/referido; puede ser `nullptr`.
+* `owner<T&>`   // Una `T&` que posee el objeto apuntado/referido.
 
-`owner` is used to mark owning pointers in code that cannot be upgraded to use proper resource handles.
-Reasons for that include:
+`owner` es usado para marcar punteros poseedores en código que no puede ser actualizado para usar gestores de recursos apropiados. Razones de esto incluyen:
 
-* Cost of conversion.
-* The pointer is used with an ABI.
-* The pointer is part of the implementation of a resource handle.
+* Costo de conversión.
+* El puntero es usado con una ABI.
+* El puntero es parte de la implementación de un gestor de recursos.
 
-An `owner<T>` differs from a resource handle for a `T` by still requiring an explicit `delete`.
+Un `owner<T>` difiere de un gestor de recurso para una `T` en seguir requiriendo un `delete` explícito.
 
-An `owner<T>` is assumed to refer to an object on the free store (heap).
+Se asume que un `owner<T>` se refiere a un objeto en el almacenamiento libre (montón).
 
-If something is not supposed to be `nullptr`, say so:
+Si se supone que algo no sea `nullptr`, dígalo:
 
-* `not_null<T>`   // `T` is usually a pointer type (e.g., `not_null<int*>` and `not_null<owner<Foo*>>`) that may not be `nullptr`.
-  `T` can be any type for which `==nullptr` is meaningful.
+* `not_null<T>`   // `T` usualmente es un tipo puntero (p. ej., `not_null<int*>` y `not_null<owner<Foo*>>`) que no puede ser `nullptr`.
+  `T` puede ser cualquier tipo para el cual `==nullptr` es significativo.
 
-* `span<T>`       // `[`p`:`p+n`), constructor from `{p, q}` and `{p, n}`; `T` is the pointer type
-* `span_p<T>`     // `{p, predicate}` \[`p`:`q`) where `q` is the first element for which `predicate(*p)` is true
+* `span<T>`       // `[`p`:`p+n`)`, constructor de `{p, q}` y `{p, n}`; `T` es un tipo puntero.
+* `span_p<T>`     // `{p, predicado}` \[`p`:`q`) donde `q` es el primer elemento para el cual `predicado(*p)` es verdadero.
 * `string_span`   // `span<char>`
 * `cstring_span`  // `span<const char>`
 
-A `span<T>` refers to zero or more mutable `T`s unless `T` is a `const` type.
+Un `span<T>` se refiere a cero o más `T` mutables al menos que `T` sea un tipo `const`.
 
-"Pointer arithmetic" is best done within `span`s.
-A `char*` that points to more than one `char` but is not a C-style string (e.g., a pointer into an input buffer) should be represented by a `span`.
+La «aritmética de punteros» se hace mejor con `span`. Un `char*` que apunta a más de un `char` pero no es una cadena estilo-C (p. ej., un puntero a un amortiguador de entrada) debe ser representado por un `span`.
 
-* `zstring`    // a `char*` supposed to be a C-style string; that is, a zero-terminated sequence of `char` or `nullptr`
-* `czstring`   // a `const char*` supposed to be a C-style string; that is, a zero-terminated sequence of `const` `char` or `nullptr`
+* `zstring`    // Un `char*` que se supone es una cadena estilo-C; es decir, una secuencia de `char` terminada en cero o `nullptr`.
+* `czstring`   // Un `const char*` que se supone es una cadena estilo-C; es decir, una secuencia de `const` `char` terminada en cero o `nullptr`.
 
-Logically, those last two aliases are not needed, but we are not always logical, and they make the distinction between a pointer to one `char` and a pointer to a C-style string explicit.
-A sequence of characters that is not assumed to be zero-terminated should be a `char*`, rather than a `zstring`.
-French accent optional.
+Lógicamente, estos dos últimos alias no son necesarios, pero no siempre somos lógicos, y hacen explícita la distinción entre un puntero a un `char` y un puntero a una cadena estilo-C. Una secuencia de caracteres que no se asume termina en cero debe ser un `char*`, en lugar de un `zstring`. El acento francés es opcional.
 
-Use `not_null<zstring>` for C-style strings that cannot be `nullptr`. ??? Do we need a name for `not_null<zstring>`? or is its ugliness a feature?
+Use `not_null<zstring>` para cadenas estilo-C que no puedan ser `nullptr`. ??? Do we need a name for `not_null<zstring>`? or is its ugliness a feature?
 
-## <a name="SS-ownership"></a>GSL.owner: Ownership pointers
+## <a name="SS-ownership"></a>GSL.owner: Punteros de posesión
 
-* `unique_ptr<T>`     // unique ownership: `std::unique_ptr<T>`
-* `shared_ptr<T>`     // shared ownership: `std::shared_ptr<T>` (a counted pointer)
-* `stack_array<T>`    // A stack-allocated array. The number of elements are determined at construction and fixed thereafter. The elements are mutable unless `T` is a `const` type.
-* `dyn_array<T>`      // ??? needed ??? A heap-allocated array. The number of elements are determined at construction and fixed thereafter.
-  The elements are mutable unless `T` is a `const` type. Basically a `span` that allocates and owns its elements.
+* `unique_ptr<T>`     // posesión única: `std::unique_ptr<T>`
+* `shared_ptr<T>`     // posesión compartida: `std::shared_ptr<T>` (un puntero contado)
+* `stack_array<T>`    // Una colección asignada en la pila. El número de elementos se determina en la construcción y es fijo a partir de ahí. Los elementos son mutables al menos que `T` sea un tipo `const`.
+* `dyn_array<T>`      // ??? needed ??? Una colección asignada en el montón. El número de elementos se determina en la construcción y es fijo a partir de ahí. Los elementos son mutables al menos que `T` sea un tipo `const`. Básicamente un `span` que asigna y posee sus propios elementos.
 
-## <a name="SS-assertions"></a>GSL.assert: Assertions
+## <a name="SS-assertions"></a>GSL.assert: Aserciones
 
-* `Expects`     // precondition assertion. Currently placed in function bodies. Later, should be moved to declarations.
-                // `Expects(p)` terminates the program unless `p == true`
-                // `Expect` in under control of some options (enforcement, error message, alternatives to terminate)
-* `Ensures`     // postcondition assertion. Currently placed in function bodies. Later, should be moved to declarations.
+* `Expects`     // Aserción de pre-condición. Actualmente ubicada en los cuerpos de funciones. Luego, debería ser movido a las declaraciones.
+                // `Expects(p)` termina el programa al menos que `p == true`.
+                // `Expect` está bajo el control de algunas opciones (aplicación, mensaje de error, alternativas a terminar).
+* `Ensures`     // Aserción de pos-condición. Actualmente ubicada en los cuerpos de funciones. Luego, debería ser movido a las declaraciones.
 
-These assertions is currently macros (yuck!) and must appear in function definitions (only)
-pending standard commission decisions on contracts and assertion syntax.
-See [the contract proposal](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf) uses the attribute syntax,
-for example, `Expects(p!=nullptr)` will become`[[expects: p!=nullptr]]`.
+Actualmente, estas aserciones son macros (¡puaf!) y deben aparecer (solamente) en las definiciones de funciones, pendiente de las decisiones de la comisión estándar sobre la sintaxis de contratos y aserción. Vea [la propuesta de contrato](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf); usando la sintaxis de atributos, por ejemplo, `Expects(p!=nullptr)` se volverá `[[expects: p!=nullptr]]`.
 
-## <a name="SS-utilities"></a>GSL.util: Utilities
+## <a name="SS-utilities"></a>GSL.util: Utilidades
 
-* `finally`       // `finally(f)` makes a `final_action{f}` with a destructor that invokes `f`
-* `narrow_cast`   // `narrow_cast<T>(x)` is `static_cast<T>(x)`
-* `narrow`        // `narrow<T>(x)` is `static_cast<T>(x)` if `static_cast<T>(x) == x` or it throws `narrowing_error`
-* `[[implicit]]`  // "Marker" to put on single-argument constructors to explicitly make them non-explicit.
+* `finally`       // `finally(f)` crea un `final_action{f}` con un destructor que invoca `f`.
+* `narrow_cast`   // `narrow_cast<T>(x)` es `static_cast<T>(x)`.
+* `narrow`        // `narrow<T>(x)` es `static_cast<T>(x)` si `static_cast<T>(x) == x` o arroja `narrowing_error`.
+* `[[implicit]]`  // «Marcador» para poner en constructores de un solo argumento para hacerlos explícitamente no-explícitos.
 * `move_owner`    // `p = move_owner(q)` means `p = q` but ???
 
-## <a name="SS-gsl-concepts"></a>GSL.concept: Concepts
+## <a name="SS-gsl-concepts"></a>GSL.concept: Conceptos
 
-These concepts (type predicates) are borrowed from
-Andrew Sutton's Origin library,
-the Range proposal,
-and the ISO WG21 Palo Alto TR.
-They are likely to be very similar to what will become part of the ISO C++ standard.
-The notation is that of the ISO WG21 [Concepts TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4553.pdf).
-Most of the concepts below are defined in [the Ranges TS](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/n4569.pdf).
+Estos conceptos (predicados de tipos) son prestados de la biblioteca Origin de Andrew Sutton, la propuesta de rangos, y el IT de Palo Alto de ISO WG21. Posiblemente son muy similares a lo que se volverá parte del estándar ISO C++. La notación es de [la ET de conceptos](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/n4553.pdf) de ISO WG21. La mayoría de conceptos debajo están definidos en [la ET de rangos](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/n4569.pdf).
 
 * `Range`
 * `String`   // ???
 * `Number`   // ???
 * `Sortable`
-* `Pointer`  // A type with `*`, `->`, `==`, and default construction (default construction is assumed to set the singular "null" value); see [smart pointers](#Rr-smartptrconcepts)
-* `Unique_ptr`  // A type that matches `Pointer`, has move (not copy), and matches the Lifetime profile criteria for a `unique` owner type; see [smart pointers](#Rr-smartptrconcepts)
-* `Shared_ptr`   // A type that matches `Pointer`, has copy, and matches the Lifetime profile criteria for a `shared` owner type; see [smart pointers](#Rr-smartptrconcepts)
+* `Pointer`  // Un tipo con `*`, `->`, `==`, y construcción por defecto (se asume que la construcción por defecto establece el valor singular «nulo»); vea [punteros inteligentes](#Rr-smartptrconcepts).
+* `Unique_ptr`  // Un tipo que empareja `Pointer`, tiene mueve (no copia), y empareja el criterio del perfil de vida para un tipo dueño `unique`; vea [punteros inteligentes](#Rr-smartptrconcepts).
+* `Shared_ptr`   // Un tipo que empareja `Pointer`, tiene copia, y empareja el criterio del perfil de vida para un tipo dueño `shared`; vea [punteros inteligentes](#Rr-smartptrconcepts).
 * `EqualityComparable`   // ???Must we suffer CaMelcAse???
 * `Convertible`
 * `Common`
@@ -17578,9 +17559,9 @@ Most of the concepts below are defined in [the Ranges TS](http://www.open-std.or
 * `Relation`
 * ...
 
-### <a name="SS-gsl-smartptrconcepts"></a>Smart pointer concepts
+### <a name="SS-gsl-smartptrconcepts"></a>Conceptos de puntero inteligente
 
-Described in [Lifetimes paper](https://github.com/isocpp/CppCoreGuidelines/blob/master/docs/Lifetimes%20I%20and%20II%20-%20v0.9.1.pdf).
+Descritos en [el papel de vidas](https://github.com/isocpp/CppCoreGuidelines/blob/master/docs/Lifetimes%20I%20and%20II%20-%20v0.9.1.pdf).
 
 # <a name="S-naming"></a>NL: Naming and layout rules
 
