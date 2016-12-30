@@ -26,7 +26,7 @@ Problems:
 You can [read an explanation of the scope and structure of this Guide](#S-abstract) or just jump straight in:
 
 * [In: Introducción](#S-introduction)
-* [P: Philosophy](#S-philosophy)
+* [P: Filosofía](#S-philosophy)
 * [I: Interfaces](#S-interfaces)
 * [F: Functions](#S-functions)
 * [C: Classes and class hierarchies](#S-class)
@@ -222,7 +222,7 @@ Esto no es un manual del lenguaje. Se supone que sea de ayuda, más que completo
 ## <a name="SS-sec"></a>In.sec: Secciones principales
 
 * [In: Introducción](#S-introduction)
-* [P: Philosophy](#S-philosophy)
+* [P: Filosofía](#S-philosophy)
 * [I: Interfaces](#S-interfaces)
 * [F: Functions](#S-functions)
 * [C: Classes and class hierarchies](#S-class)
@@ -256,366 +256,345 @@ Estas secciones no son ortogonales.
 
 Cada sección (p. ej., «P» para «Filosofía») y cada subsección (p. ej., «C.hier» para «Jerarquías de clase (POO)») tiene una abreviación para facilitar la búsqueda y referencia. Las abreviaturas de sección principal también son usadas en números de regla (p. ej., «C.11» para «Haga regular los tipos concretos»).
 
-# <a name="S-philosophy"></a>P: Philosophy
+# <a name="S-philosophy"></a>P: Filosofía
 
-The rules in this section are very general.
+Las reglas en esta sección son muy generales.
 
-Philosophy rules summary:
+Resumen de reglas de filosofía:
 
-* [P.1: Express ideas directly in code](#Rp-direct)
-* [P.2: Write in ISO Standard C++](#Rp-Cplusplus)
-* [P.3: Express intent](#Rp-what)
-* [P.4: Ideally, a program should be statically type safe](#Rp-typesafe)
-* [P.5: Prefer compile-time checking to run-time checking](#Rp-compile-time)
-* [P.6: What cannot be checked at compile time should be checkable at run time](#Rp-run-time)
-* [P.7: Catch run-time errors early](#Rp-early)
-* [P.8: Don't leak any resources](#Rp-leak)
-* [P.9: Don't waste time or space](#Rp-waste)
-* [P.10: Prefer immutable data to mutable data](#Rp-mutable)
-* [P.11: Encapsulate messy constructs, rather than spreading through the code](#Rp-library)
+* [P.1: Exprese ideas directamente en código](#Rp-direct)
+* [P.2: Escriba en Estándar ISO C++](#Rp-Cplusplus)
+* [P.3: Exprese intención](#Rp-what)
+* [P.4: Idealmente, un programa debe ser seguro de tipo estáticamente](#Rp-typesafe)
+* [P.5: Prefiera chequear en tiempo de compilación a chequear en tiempo de ejecución](#Rp-compile-time)
+* [P.6: Lo que no se pueda chequear en tiempo de compilación debería ser chequeable en tiempo de ejecución](#Rp-run-time)
+* [P.7: Atrape errores de tiempo de ejecución temprano](#Rp-early)
+* [P.8: No filtre ningún recurso](#Rp-leak)
+* [P.9: No malgaste tiempo o espacio](#Rp-waste)
+* [P.10: Prefiera datos inmutables a datos mutables](#Rp-mutable)
+* [P.11: Encapsule construcciones sucias, en lugar de esparcirlas por el código](#Rp-library)
 
-Philosophical rules are generally not mechanically checkable.
-However, individual rules reflecting these philosophical themes are.
-Without a philosophical basis the more concrete/specific/checkable rules lack rationale.
+Las reglas filosóficas generalmente no son chequeables mecánicamente. Sin embargo, las reglas individuales que reflejan estos temas filosóficos la son. Sin una base filosófica, las reglas más concretas (específicas/chequeables) carecen de razonamiento.
 
-### <a name="Rp-direct"></a>P.1: Express ideas directly in code
+### <a name="Rp-direct"></a>P.1: Exprese ideas directamente en código
 
-##### Reason
+##### Razón
 
-Compilers don't read comments (or design documents) and neither do many programmers (consistently).
-What is expressed in code has defined semantics and can (in principle) be checked by compilers and other tools.
+Los compiladores no leen comentarios (o documentos de diseño) y tampoco lo hacen (consistentemente) muchos programadores. Lo que se expresa en código tiene semántica definida y (en principio) puede ser chequeado por compiladores y otras herramientas.
 
-##### Example
+##### Ejemplo
 
-    class Date {
+    class Fecha {
         // ...
     public:
-        Month month() const;  // do
-        int month();          // don't
+        Mes mes() const;  // haga
+        int mes();        // no haga
         // ...
     };
 
-The first declaration of `month` is explicit about returning a `Month` and about not modifying the state of the `Date` object.
-The second version leaves the reader guessing and opens more possibilities for uncaught bugs.
+La primera declaración de `mes` es explícita respecto a devolver un `Mes` y respecto a no modificar el estado del objeto `Fecha`. La segunda versión deja al lector adivinando y abre más posibilidades de bichos sin atrapar.
 
-##### Example
+##### Ejemplo
 
     void f(vector<string>& v)
     {
         string val;
         cin >> val;
         // ...
-        int index = -1;                    // bad
+        int indice = -1;                    // malo
         for (int i = 0; i < v.size(); ++i)
             if (v[i] == val) {
-                index = i;
+                indice = i;
                 break;
             }
         // ...
     }
 
-That loop is a restricted form of `std::find`.
-A much clearer expression of intent would be:
+Ese ciclo es una forma restrictiva de `std::find`. Una expresión de intención mucho más clara sería:
 
     void f(vector<string>& v)
     {
         string val;
         cin >> val;
         // ...
-        auto p = find(begin(v), end(v), val);  // better
+        auto p = find(begin(v), end(v), val);  // mejor
         // ...
     }
 
-A well-designed library expresses intent (what is to be done, rather than just how something is being done) far better than direct use of language features.
+Una biblioteca bien diseñada expresa la intención (lo que ha de hacerse, en lugar de solo cómo se hace algo) mucho mejor que el uso directo de funcionalidades del lenguaje.
 
-A C++ programmer should know the basics of the standard library, and use it where appropriate.
-Any programmer should know the basics of the foundation libraries of the project being worked on, and use them appropriately.
-Any programmer using these guidelines should know the [guideline support library](#S-gsl), and use it appropriately.
+Un programador de C++ debe conocer lo esencial de la biblioteca estándar, y usarla donde sea apropiado. Todo programador debe conocer lo esencial de las bibliotecas fundamentales del proyecto en que se trabaja, y usarlas apropiadamente. Todo programador usando estas pautas debe conocer la [biblioteca de apoyo a las pautas](#S-gsl), y usarla apropiadamente.
 
-##### Example
+##### Ejemplo
 
-    change_speed(double s);   // bad: what does s signify?
+    cambiar_velocidad(double v);   // malo: ¿qué significa v?
     // ...
-    change_speed(2.3);
+    cambiar_velocidad(2.3);
 
-A better approach is to be explicit about the meaning of the double (new speed or delta on old speed?) and the unit used:
+Un mejor enfoque es ser explícito en cuanto al significado del double (¿velocidad nueva o delta de la velocidad vieja?) y la unidad usada:
 
-    change_speed(Speed s);    // better: the meaning of s is specified
+    cambiar_velocidad(Velocidad v);    // mejor: se especifica el significado de s
     // ...
-    change_speed(2.3);        // error: no unit
-    change_speed(23m / 10s);  // meters per second
+    cambiar_velocidad(2.3);        // error: sin unidad
+    cambiar_velocidad(23m / 10s);  // metros por segundo
 
-We could have accepted a plain (unit-less) `double` as a delta, but that would have been error-prone.
-If we wanted both absolute speed and deltas, we would have defined a `Delta` type.
+Podríamos haber aceptado un `double` simple (sin unidad) como delta, pero eso habría sido propenso a errores. Si quisiéramos tanto velocidad absoluta como deltas, habríamos definido un tipo `Delta`.
 
-##### Enforcement
+##### Aplicación
 
-Very hard in general.
+Muy difícil en general.
 
-* use `const` consistently (check if member functions modify their object; check if functions modify arguments passed by pointer or reference)
-* flag uses of casts (casts neuter the type system)
-* detect code that mimics the standard library (hard)
+* Use `const` consistentemente (chequee si las funciones miembro modifican su objeto; chequee si las funciones modifican los argumentos pasados por puntero o referencia).
+* Marque usos de moldes (los moldes neutralizan el sistema de tipos).
+* Detecte código que imita la biblioteca estándar (difícil).
 
-### <a name="Rp-Cplusplus"></a>P.2: Write in ISO Standard C++
+### <a name="Rp-Cplusplus"></a>P.2: Escriba en Estándar ISO C++
 
-##### Reason
+##### Razón
 
-This is a set of guidelines for writing ISO Standard C++.
+Esto es un set de pautas para escribir en Estándar ISO C++.
 
-##### Note
+##### Nota
 
-There are environments where extensions are necessary, e.g., to access system resources.
-In such cases, localize the use of necessary extensions and control their use with non-core Coding Guidelines.  If possible, build interfaces that encapsulate the extensions so they can be turned off or compiled away on systems that do not support those extensions.
+Hay ambientes en donde las extensiones son necesarias, p. ej., para acceder a recursos del sistema. En tales casos, localice el uso de las extensiones necesarias y controle su uso con pautas para codificar no centrales. Si es posible, construya interfaces que encapsulen las extensiones para que puedan ser desactivadas o no compiladas en sistemas que no soporten esas extensiones.
 
-Extensions often do not have rigorously defined semantics.  Even extensions that
-are common and implemented by multiple compilers may have slightly different
-behaviors and edge case behavior as a direct result of *not* having a rigorous
-standard definition.  With sufficient use of any such extension, expected
-portability will be impacted.
+Las extensiones a menudo no tienen semántica rigurosamente definida. Incluso las extensiones que son comunes e implementadas por múltiples compiladores podrían tener comportamientos ligeramente diferentes y particulares en casos extremos como resultado directo de *no* tener una definición rigurosa y estándar. Con el suficiente uso de cualquier extensión, la portabilidad esperada será impactada.
 
-##### Note
+##### Nota
 
-Using valid ISO C++ does not guarantee portability (let alone correctness).
-Avoid dependence on undefined behavior (e.g., [undefined order of evaluation](#Res-order))
-and be aware of constructs with implementation defined meaning (e.g., `sizeof(int)`).
+El uso de ISO C++ no garantiza portabilidad (y menos la exactitud). Evite la dependencia en comportamiento indefinido (p. ej., el [orden de evaluación indefinido](#Res-order)) y sea precavido con las construcciones con significado dependiente de la implementación (p. ej., `sizeof(int)`).
 
-##### Note
+##### Nota
 
-There are environments where restrictions on use of standard C++ language or library features are necessary, e.g., to avoid dynamic memory allocation as required by aircraft control software standards.
-In such cases, control their (dis)use with an extension of these Coding Guidelines customized to the specific environment.
+Hay ambientes donde es necesario restringir el uso del lenguaje o funcionalidades de la biblioteca C++ estándar, p. ej., para evitar asignación de memoria dinámica como requieren estándares de software de control de aeronaves. En tales casos, controle su (des)uso con una extensión a estas pautas para codificar personalizada para el ambiente específico.
 
-##### Enforcement
+##### Aplicación
 
-Use an up-to-date C++ compiler (currently C++11 or C++14) with a set of options that do not accept extensions.
+Use un compilador de C++ que esté al día (actualmente C++11 o C++14) con un set de opciones que no acepten extensiones.
 
-### <a name="Rp-what"></a>P.3: Express intent
+### <a name="Rp-what"></a>P.3: Exprese intención
 
-##### Reason
+##### Razón
 
-Unless the intent of some code is stated (e.g., in names or comments), it is impossible to tell whether the code does what it is supposed to do.
+A menos que manifieste la intención de algún código (p. ej., en nombres o comentarios), es imposible distinguir si el código hace lo que se supone que haga.
 
-##### Example
+##### Ejemplo
 
     int i = 0;
     while (i < v.size()) {
-        // ... do something with v[i] ...
+        // ... hacer algo con v[i] ...
     }
 
-The intent of "just" looping over the elements of `v` is not expressed here. The implementation detail of an index is exposed (so that it might be misused), and `i` outlives the scope of the loop, which may or may not be intended. The reader cannot know from just this section of code.
+Aquí no se expresa la intención de «solo» iterar por los elementos de `v`. Se expone el detalle de implementación de un índice (para que pueda ser usado mal), e `i` vive más que el ámbito del cilo, que puede o no sea intencional. El lector no puede saberlo con solo esta sección de código.
 
-Better:
+Mejor:
 
-    for (const auto& x : v) { /* do something with x */ }
+    for (const auto& x : v) { /* hacer algo con x */ }
 
-Now, there is no explicit mention of the iteration mechanism, and the loop operates on a reference to `const` elements so that accidental modification cannot happen. If modification is desired, say so:
+Ahora no hay mención explícita del mecanismo de iteración, y el ciclo opera en elementos de referencia a `const` para que no puedan suceder modificaciones accidentales. Si se desea modificar, dígalo:
 
-    for (auto& x : v) { /* do something with x */ }
+    for (auto& x : v) { /* hacer algo con x */ }
 
-Sometimes better still, use a named algorithm:
+A veces mucho mejor, use un algoritmo nombrado:
 
-    for_each(v, [](int x) { /* do something with x */ });
-    for_each(par, v, [](int x) { /* do something with x */ });
+    for_each(v, [](int x) { /* hacer algo con x */ });
+    for_each(par, v, [](int x) { /* hacer algo con x */ });
 
-The last variant makes it clear that we are not interested in the order in which the elements of `v` are handled.
+La última variante deja claro que no nos interesa el orden en que los elementos de `v` son tratados.
 
-A programmer should be familiar with
+Un programador debe estar familiarizado con:
 
-* [The guideline support library](#S-gsl)
-* [The ISO C++ standard library](#S-stdlib)
-* Whatever foundation libraries are used for the current project(s)
+* [La biblioteca de apoyo a las pautas](#S-gsl).
+* [La biblioteca ISO C++ estándar](#S-stdlib).
+* Cualquier biblioteca fundamental usada por los proyectos actuales.
 
-##### Note
+##### Nota
 
-Alternative formulation: Say what should be done, rather than just how it should be done.
+Formulación alternativa: Diga lo que debe hacerse, en lugar de cómo debe hacerse.
 
-##### Note
+##### Nota
 
-Some language constructs express intent better than others.
+Algunas construcciones del lenguaje expresan la intención mejor que otras.
 
-##### Example
+##### Ejemplo
 
-If two `int`s are meant to be the coordinates of a 2D point, say so:
+Si se supone que dos `int` son coordenadas de un punto 2D, dígalo:
 
-    draw_line(int, int, int, int);  // obscure
-    draw_line(Point, Point);        // clearer
+    dibujar_linea(int, int, int, int);  // oscuro
+    dibujar_linea(Punto, Punto);        // más claro
 
-##### Enforcement
+##### Aplicación
 
-Look for common patterns for which there are better alternatives
+Busque patrones comunes para los cuales existen mejores alternativas.
 
-* simple `for` loops vs. range-`for` loops
-* `f(T*, int)` interfaces vs. `f(span<T>)` interfaces
-* loop variables in too large a scope
-* naked `new` and `delete`
-* functions with many arguments of built-in types
+* Ciclos `for` simple contra ciclos `for`-rango.
+* Interfaces `f(T*, int)` contra interfaces `f(span<T>)`.
+* Variables de ciclo en un ámbito muy grande.
+* `new` y `delete` desnudo.
+* Funciones con muchos argumentos de tipo primitivo.
 
-There is a huge scope for cleverness and semi-automated program transformation.
+Hay una gran amplitud para el ingenio y transformación de programa semi-automatizado.
 
-### <a name="Rp-typesafe"></a>P.4: Ideally, a program should be statically type safe
+### <a name="Rp-typesafe"></a>P.4: Idealmente, un programa debe ser seguro de tipo estáticamente
 
-##### Reason
+##### Razón
 
-Ideally, a program would be completely statically (compile-time) type safe.
-Unfortunately, that is not possible. Problem areas:
+Idealmente, un programa sería completamente seguro de tipo estáticamente (en tiempo de compilación). Desafortunadamente, eso no es posible. Áreas problema:
 
-* unions
-* casts
-* array decay
-* range errors
-* narrowing conversions
+* uniones
+* moldes
+* decaída de colección
+* errores de rango
+* conversiones estrechantes
 
-##### Note
+##### Nota
 
-These areas are sources of serious problems (e.g., crashes and security violations).
-We try to provide alternative techniques.
+Estas áreas son fuentes de problemas serios (p. ej., choques y violaciones de seguridad). Intentamos proveer técnicas alternativas.
 
-##### Enforcement
+##### Aplicación
 
-We can ban, restrain, or detect the individual problem categories separately, as required and feasible for individual programs.
-Always suggest an alternative.
-For example:
+Podemos prohibir, restringir, o detectar por separado las categorías problema individuales, como requiera y sea factible para programas individuales. Siempre sugiera una alternativa. Por ejemplo:
 
-* unions -- use `variant` (in C++17)
-* casts -- minimize their use; templates can help
-* array decay -- use `span` (from the GSL)
-* range errors -- use `span`
-* narrowing conversions -- minimize their use and use `narrow` or `narrow_cast` (from the GSL) where they are necessary
+* Uniones -- Use `variant` (en C++17).
+* Moldes -- Minimice su uso; las plantillas pueden ayudar.
+* Decaída de colección -- Use `span` (de la GSL).
+* Errores de rango -- Use `span`.
+* Conversiones estrechantes -- Minimice su uso y use `narrow` o `narrow_cast` (de la GSL) donde sean necesarias.
 
-### <a name="Rp-compile-time"></a>P.5: Prefer compile-time checking to run-time checking
+### <a name="Rp-compile-time"></a>P.5: Prefiera chequear en tiempo de compilación a chequear en tiempo de ejecución
 
-##### Reason
+##### Razón
 
-Code clarity and performance.
-You don't need to write error handlers for errors caught at compile time.
+Claridad de código y rendimiento. No necesita escribir gestores de error para errores atrapados en tiempo de compilación.
 
-##### Example
+##### Ejemplo
 
-    // Int is an alias used for integers
-    int bits = 0;         // don't: avoidable code
+    // Int es un alias usado para enteros
+    int bits = 0;         // no haga: código evitable
     for (Int i = 1; i; i <<= 1)
         ++bits;
     if (bits < 32)
-        cerr << "Int too small\n"
+        cerr << "Int muy pequeño\n"
 
-This example is easily simplified
+Este ejemplo es fácilmente simplificado:
 
-    // Int is an alias used for integers
-    static_assert(sizeof(Int) >= 4);    // do: compile-time check
+    // Int es un alias usado para enteros
+    static_assert(sizeof(Int) >= 4);    // haga: chequeo en tiempo de compilación
 
-##### Example
+##### Ejemplo
 
-    void read(int* p, int n);   // read max n integers into *p
-
-    int a[100];
-    read(a, 1000);    // bad
-
-better
-
-    void read(span<int> r); // read into the range of integers r
+    void leer(int* p, int n);   // leer máx. n enteros a *p
 
     int a[100];
-    read(a);        // better: let the compiler figure out the number of elements
+    leer(a, 1000);    // malo
 
-**Alternative formulation**: Don't postpone to run time what can be done well at compile time.
+Mejor:
 
-##### Enforcement
+    void leer(span<int> r); // leer al rango de enteros r
 
-* Look for pointer arguments.
-* Look for run-time checks for range violations.
+    int a[100];
+    leer(a);        // mejor: deje al compilador averiguar el número de elementos
 
-### <a name="Rp-run-time"></a>P.6: What cannot be checked at compile time should be checkable at run time
+**Formulación alternativa**: No posponga al tiempo de ejecución lo que pueda hacerse bien en tiempo de compilación.
 
-##### Reason
+##### Aplicación
 
-Leaving hard-to-detect errors in a program is asking for crashes and bad results.
+* Busque argumentos puntero.
+* Busque chequeos en tiempo de ejecución para violaciones de rango.
 
-##### Note
+### <a name="Rp-run-time"></a>P.6: Lo que no se pueda chequear en tiempo de compilación debería ser chequeable en tiempo de ejecución
 
-Ideally we catch all errors (that are not errors in the programmer's logic) at either compile-time or run-time. It is impossible to catch all errors at compile time and often not affordable to catch all remaining errors at run time. However, we should endeavor to write programs that in principle can be checked, given sufficient resources (analysis programs, run-time checks, machine resources, time).
+##### Razón
 
-##### Example, bad
+Dejar errores difíciles de detectar en un programa es pedir por choques y resultados erróneos.
 
-    // separately compiled, possibly dynamically loaded
+##### Nota
+
+Idealmente atrapamos todos los errores (que no sean errores en la lógica del programador) ya sea en tiempo de compilación o en tiempo de ejecución. Es imposible atrapar todos los errores en tiempo de compilación y a menudo no es costeable atrapar el resto de errores en tiempo de ejecución. Sin embargo, debemos esforzarnos en escribir programas que en principio puedan ser chequeados, dado suficientes recursos (programas de análisis, chequeos en tiempo de ejecución, recursos de máquina, tiempo).
+
+##### Ejemplo, malo
+
+    // compilado por separado, posiblemente cargado dinámicamente
     extern void f(int* p);
 
     void g(int n)
     {
-        // bad: the number of elements is not passed to f()
+        // malo: el número de elementos no se pasa a f()
         f(new int[n]);
     }
 
-Here, a crucial bit of information (the number of elements) has been so thoroughly "obscured" that static analysis is probably rendered infeasible and dynamic checking can be very difficult when `f()` is part of an ABI so that we cannot "instrument" that pointer. We could embed helpful information into the free store, but that requires global changes to a system and maybe to the compiler. What we have here is a design that makes error detection very hard.
+Aquí, una pieza de información crucial (el número de elementos) ha sido tan rigurosamente «oscurecida» que el análisis estático probablemente se ha echo infactible y el chequeado dinámico puede ser muy difícil cuando `f()` es parte de una ABI por lo que no podamos «instrumentar» ese puntero. Podríamos embeber información auxiliar en el almacenamiento libre, pero eso implica cambios globales a un sistema y quizás al compilador. Lo que tenemos aquí es un diseño que hace muy difícil la detección de errores.
 
-##### Example, bad
+##### Ejemplo, malo
 
-We can of course pass the number of elements along with the pointer:
+Podemos, por supuesto, pasar el número de elementos junto con el puntero:
 
-    // separately compiled, possibly dynamically loaded
+    // compilado por separado, posiblemente cargado dinámicamente
     extern void f2(int* p, int n);
 
     void g2(int n)
     {
-        f2(new int[n], m);  // bad: a wrong number of elements can be passed to f()
+        f2(new int[n], m);  // malo: número de elementos incorrecto pasado a f()
     }
 
-Passing the number of elements as an argument is better (and far more common) than just passing the pointer and relying on some (unstated) convention for knowing or discovering the number of elements. However (as shown), a simple typo can introduce a serious error. The connection between the two arguments of `f2()` is conventional, rather than explicit.
+Pasar el número de elementos como un argumento es mejor (y mucho más común) que solo pasar el puntero y depender de una convención (sin manifiesto) para conocer o descubrir el número de elementos. Sin embargo, como se mostró, un simple error tipográfico puede introducir un error serio. La conexión entre los dos argumentos de `f2()` es convencional, en lugar de explícita.
 
-Also, it is implicit that `f2()` is supposed to `delete` its argument (or did the caller make a second mistake?).
+Además, es implícito que `f2()` debe hacer `delete` a su argumento (¿o el llamador cometió un segundo error?).
 
-##### Example, bad
+##### Ejemplo, malo
 
-The standard library resource management pointers fail to pass the size when they point to an object:
+Los punteros de administración de recursos de la biblioteca estándar fallan en pasar el tamaño cuando apuntan a un objeto:
 
-    // separately compiled, possibly dynamically loaded
-    // NB: this assumes the calling code is ABI-compatible, using a
-    // compatible C++ compiler and the same stdlib implementation
+    // compilado por separado, posiblemente cargado dinámicamente
+    // N. B.: Esto asume que el código llamador es compatible de ABI, usando
+    // un compilador de C++ compatible y la misma implementación de stdlib.
     extern void f3(unique_ptr<int[]>, int n);
 
     void g3(int n)
     {
-        f3(make_unique<int[]>(n), m);    // bad: pass ownership and size separately
+        f3(make_unique<int[]>(n), m);    // malo: pasa posesión y tamaño por separado
     }
 
-##### Example
+##### Ejemplo
 
-We need to pass the pointer and the number of elements as an integral object:
+Necesitamos pasar el puntero y el número de elementos como un objeto íntegro:
 
-    extern void f4(vector<int>&);   // separately compiled, possibly dynamically loaded
-    extern void f4(span<int>);      // separately compiled, possibly dynamically loaded
-                                    // NB: this assumes the calling code is ABI-compatible, using a
-                                    // compatible C++ compiler and the same stdlib implementation
+    extern void f4(vector<int>&);   // compilado por separado, posiblemente cargado dinámicamente
+    extern void f4(span<int>);      // compilado por separado, posiblemente cargado dinámicamente
+                                    // N. B.: Esto asume que el código llamador es compatible de ABI, usando
+                                    // un compilador de C++ compatible y la misma implementación de stdlib.
 
     void g3(int n)
     {
         vector<int> v(n);
-        f4(v);                     // pass a reference, retain ownership
-        f4(span<int>{v});          // pass a view, retain ownership
+        f4(v);                     // pasa una referencia, retén posesión
+        f4(span<int>{v});          // pasa una vista, retén posesión
     }
 
-This design carries the number of elements along as an integral part of an object, so that errors are unlikely and dynamic (run-time) checking is always feasible, if not always affordable.
+Este diseño carga consigo el número de elementos como parte íntegra de un objeto, para que los errores sean improbables y el chequeado dinámico (en tiempo de ejecución) siempre sea factible, si no siempre costeable.
 
-##### Example
+##### Ejemplo
 
-How do we transfer both ownership and all information needed for validating use?
+¿Cómo transferimos tanto la posesión como toda la información necesaria para validar el uso?
 
-    vector<int> f5(int n)    // OK: move
+    vector<int> f5(int n)    // bueno: mueve
     {
         vector<int> v(n);
-        // ... initialize v ...
+        // ... inicializar v ...
         return v;
     }
 
-    unique_ptr<int[]> f6(int n)    // bad: loses n
+    unique_ptr<int[]> f6(int n)    // malo: pierde n
     {
         auto p = make_unique<int[]>(n);
-        // ... initialize *p ...
+        // ... inicializar *p ...
         return p;
     }
 
-    owner<int*> f7(int n)    // bad: loses n and we might forget to delete
+    owner<int*> f7(int n)    // malo: pierde n y podríamos olvidar hacer delete
     {
         owner<int*> p = new int[n];
-        // ... initialize *p ...
+        // ... inicializar *p ...
         return p;
     }
 
@@ -625,94 +604,88 @@ How do we transfer both ownership and all information needed for validating use?
 * show how possible checks are avoided by interfaces that pass polymorphic base classes around, when they actually know what they need?
   Or strings as "free-style" options
 
-##### Enforcement
+##### Aplicación
 
-* Flag (pointer, count)-style interfaces (this will flag a lot of examples that can't be fixed for compatibility reasons)
+* Marque interfaces del estilo (puntero, conteo) (Esto marcará muchos ejemplos que no pueden ser corregidos por razones de compatibilidad).
 * ???
 
-### <a name="Rp-early"></a>P.7: Catch run-time errors early
+### <a name="Rp-early"></a>P.7: Atrape errores de tiempo de ejecución temprano
 
-##### Reason
+##### Razón
 
-Avoid "mysterious" crashes.
-Avoid errors leading to (possibly unrecognized) wrong results.
+Evite choques «misteriosos». Evite errores que llevan a resultados erróneos (posiblemente irreconocibles como tal).
 
-##### Example
+##### Ejemplo
 
-    void increment1(int* p, int n)    // bad: error prone
+    void incremento1(int* p, int n)    // malo: propenso a errores
     {
         for (int i = 0; i < n; ++i) ++p[i];
     }
 
-    void use1(int m)
+    void uso1(int m)
     {
         const int n = 10;
         int a[n] = {};
         // ...
-        increment1(a, m);   // maybe typo, maybe m <= n is supposed
-                            // but assume that m == 20
+        incremento1(a, m);   // quizás un error tipográfico, quizás se supone m <= n
+                             // pero asuma que m == 20
         // ...
     }
 
-Here we made a small error in `use1` that will lead to corrupted data or a crash.
-The (pointer, count)-style interface leaves `increment1()` with no realistic way of defending itself against out-of-range errors.
-Assuming that we could check subscripts for out of range access, the error would not be discovered until `p[10]` was accessed.
-We could check earlier and improve the code:
+Aquí cometimos un pequeño error en `uso1` que llevará a datos corruptos o un choque. La interfaz de estilo (puntero, conteo) deja a `incremento1()` sin una manera realista de defenderse contra errores de fuera-de-rango. Asumiendo que podemos chequear los subíndices por acceso afuera del rango, el error no sería descubierto hasta de `p[10]` sea accedido. Podríamos chequear antes y mejorar el código:
 
-    void increment2(span<int> p)
+    void incremenot2(span<int> p)
     {
         for (int& x : p) ++x;
     }
 
-    void use2(int m)
+    void uso2(int m)
     {
         const int n = 10;
         int a[n] = {};
         // ...
-        increment2({a, m});    // maybe typo, maybe m <= n is supposed
+        incremento2({a, m});    // quizás un error tipográfico, quizás se supone m <= n
         // ...
     }
 
-Now, `m<=n` can be checked at the point of call (early) rather than later.
-If all we had was a typo so that we meant to use `n` as the bound, the code could be further simplified (eliminating the possibility of an error):
+Ahora, `m<=n` puede ser chequeado en el punto de llamada (temprano) en lugar de luego. Si todo lo que teníamos era un error tipográfico, por lo que nuestra intención era usar `n` como borde, el código podría ser simplificado aún más (eliminando la posibilidad de un error):
 
-    void use3(int m)
+    void uso3(int m)
     {
         const int n = 10;
         int a[n] = {};
         // ...
-        increment2(a);   // the number of elements of a need not be repeated
+        incremento2(a);   // el número de elementos de a no necesita ser repetido
         // ...
     }
 
-##### Example, bad
+##### Ejemplo, malo
 
-Don't repeatedly check the same value. Don't pass structured data as strings:
+No chequee repetidamente el mismo valor. No pase datos estructurados como cadenas:
 
-    Date read_date(istream& is);    // read date from istream
+    Fecha leer_fecha(istream& is);    // leer fecha de istream
 
-    Date extract_date(const string& s);    // extract date from string
+    Fecha extraer_fecha(const string& s);    // extraer fecha de string
 
-    void user1(const string& date)    // manipulate date
+    void usuario1(const string& fecha)    // manipular fecha
     {
-        auto d = extract_date(date);
+        auto f = extraer_fecha(fecha);
         // ...
     }
 
-    void user2()
+    void usario2()
     {
-        Date d = read_date(cin);
+        Fecha f = leer_fecha(cin);
         // ...
-        user1(d.to_string());
+        usuario1(f.to_string());
         // ...
     }
 
-The date is validated twice (by the `Date` constructor) and passed as a character string (unstructured data).
+La fecha es validada dos veces (por el constructor `Fecha`) y pasada como una cadena de caracteres (datos inestructurados).
 
-##### Example
+##### Ejemplo
 
-Excess checking can be costly.
-There are cases where checking early is dumb because you may not ever need the value, or may only need part of the value that is more easily checked than the whole.  Similarly, don't add validity checks that change the asymptotic behavior of your interface (e.g., don't add a `O(n)` check to an interface with an average complexity of `O(1)`).
+Chequear excesivamente puede ser costoso. Hay casos donde chequear temprano es tonto porque puede que nunca necesite el valor, o puede que solo necesite parte del valor que es más fácilmente chequeable que el todo. Similarmente, no añada chequeos de validación que cambien el comportamiento asintótico de su interfaz (p. ej., no añada un chequeo `O(n)` a una interfaz con una complejidad promedio de `O(1)`).
 
     class Jet {    // Physics says: e * e < x * x + y * y + z * z
         float x;
@@ -739,79 +712,68 @@ The physical law for a jet (`e * e < x * x + y * y + z * z`) is not an invariant
 
 ???
 
-##### Enforcement
+##### Aplicación
 
-* Look at pointers and arrays: Do range-checking early and not repeatedly
-* Look at conversions: Eliminate or mark narrowing conversions
-* Look for unchecked values coming from input
-* Look for structured data (objects of classes with invariants) being converted into strings
+* Examine punteros y colecciones: Haga chequeo de rango temprano y no repetidamente.
+* Examine conversiones: Elimine o marque conversiones estrechantes.
+* Busque valores sin chequear provenientes de entrada.
+* Busque datos estructurados (objetos de clases con invariantes) siendo convertidos a cadenas.
 * ???
 
-### <a name="Rp-leak"></a>P.8: Don't leak any resources
+### <a name="Rp-leak"></a>P.8: No filtre ningún recurso
 
-##### Reason
+##### Razón
 
-Even a slow growth in resources will, over time, exhaust the availability of those resources.
-This is particularly important for long-running programs, but is an essential piece of responsible programming behavior.
+Incluso un crecimiento pequeño en recursos hará que, con el tiempo, se exhauste la disponibilidad de dichos recursos. Esto es particularmente importante para programas de larga duración, pero es una pieza esencial de comportamiento de programación responsable.
 
-##### Example, bad
+##### Ejemplo, malo
 
-    void f(char* name)
+    void f(char* nombre)
     {
-        FILE* input = fopen(name, "r");
+        FILE* entrada = fopen(nombre, "r");
         // ...
-        if (something) return;   // bad: if something == true, a file handle is leaked
+        if (algo) return;   // nombre: si algo == true, se filtra un gestor de archivo
         // ...
-        fclose(input);
+        fclose(entrada);
     }
 
-Prefer [RAII](#Rr-raii):
+Prefiera [RAII](#Rr-raii):
 
-    void f(char* name)
+    void f(char* nombre)
     {
-        ifstream input {name};
+        ifstream entrada {nombre};
         // ...
-        if (something) return;   // OK: no leak
+        if (algo) return;   // bueno: no filtra
         // ...
     }
 
-**See also**: [The resource management section](#S-resource)
+**Vea también**: [La sección de administración de recursos](#S-resource)
 
-##### Note
+##### Nota
 
-A leak is colloquially "anything that isn't cleaned up."
-The more important classification is "anything that can no longer be cleaned up."
-For example, allocating an object on the heap and then losing the last pointer that points to that allocation.
-This rule should not be taken as requiring that allocations within long-lived objects must be returned during program shutdown.
-For example, relying on system guaranteed cleanup such as file closing and memory deallocation upon process shutdown can simplify code.
-However, relying on abstractions that implicitly clean up can be as simple, and often safer.
+Un filtro es coloquialmente «cualquier cosa que no se limpia». La clasificación más importante es «cualquier cosa que ya no puede ser limpiada». Por ejemplo, asignar un objeto en el montón y entonces perder el último puntero que apunta a esa asignación. Esta regla no debe ser tomada como requerimiento de que las asignaciones dentro de objetos de larga vida deben ser devueltas durante el apagado del programa. Por ejemplo, depender de la limpieza garantizada por un sistema como el cerrado de archivos y la deasignación de memoria tras el apagado del proceso puede simplificar el código. Sin embargo, depender de abstracciones que limpian implícitamente puede ser igual de simple, y a menudo más seguro.
 
-##### Note
+##### Nota
 
-Enforcing [the lifetime profile](#In.force) eliminates leaks.
-When combined with resource safety provided by [RAII](#Rr-raii), it eliminates the need for "garbage collection" (by generating no garbage).
-Combine this with enforcement of [the type and bounds profiles](#In.force) and you get complete type- and resource-safety, guaranteed by tools.
+Aplicar [el perfil de vida](#In.force) elimina los filtros. Cuando se combina con la seguridad de recursos proveída por [RAII](#Rr-raii), elimina la necesidad de «colección de basura» (al no generar basura). Combine esto con la aplicación de [los perfiles de tipo y bordes](#In.force) y obtiene seguridad completa de tipo y recurso, garantizada por herramientas.
 
-##### Enforcement
+##### Aplicación
 
-* Look at pointers: Classify them into non-owners (the default) and owners.
-  Where feasible, replace owners with standard-library resource handles (as in the example above).
-  Alternatively, mark an owner as such using `owner` from [the GSL](#S-gsl).
-* Look for naked `new` and `delete`
-* Look for known resource allocating functions returning raw pointers (such as `fopen`, `malloc`, and `strdup`)
+* Examine punteros: Clasifíquelos en no-dueños (el por defecto) y dueños. Cuando sea factible, reemplace los dueños con gestores de recursos de la biblioteca estándar (como en el ejemplo de arriba). Alternativamente, marque un dueño como tal usando `owner` de [la GSL](#S-gsl).
+* Busque `new` y `delete` desnudos.
+* Busque funciones que asignan recursos conocidas que devuelvan punteros crudos (como `fopen`, `malloc`, y `strdup`).
 
-### <a name="Rp-waste"></a>P.9: Don't waste time or space
+### <a name="Rp-waste"></a>P.9: No malgaste tiempo o espacio
 
-##### Reason
+##### Razón
 
-This is C++.
+Esto es C++.
 
-##### Note
+##### Nota
 
-Time and space that you spend well to achieve a goal (e.g., speed of development, resource safety, or simplification of testing) is not wasted.
-"Another benefit of striving for efficiency is that the process forces you to understand the problem in more depth." - Alex Stepanov
+El tiempo y espacio que utiliza bien para alcanzar una meta (p. ej., velocidad de desarrollo, seguridad de recurso, o simplificación de probar) no se malgasta. «Otro beneficio de esforzarse por la eficiencia es que el proceso te fuerza a entender el problema con más profundidad». - Alex Stepanov
 
-##### Example, bad
+##### Ejemplo, malo
 
     struct X {
         char ch;
@@ -823,116 +785,93 @@ Time and space that you spend well to achieve a goal (e.g., speed of development
         X(const X&);
     };
 
-    X waste(const char* p)
+    X malgasta(const char* p)
     {
-        if (p == nullptr) throw Nullptr_error{};
+        if (p == nullptr) throw Error_de_nullptr{};
         int n = strlen(p);
         auto buf = new char[n];
-        if (buf == nullptr) throw Allocation_error{};
+        if (buf == nullptr) throw Error_de_asignacion{};
         for (int i = 0; i < n; ++i) buf[i] = p[i];
-        // ... manipulate buffer ...
+        // ... manipular amortiguador ...
         X x;
         x.ch = 'a';
-        x.s = string(n);    // give x.s space for *ps
-        for (int i = 0; i < x.s.size(); ++i) x.s[i] = buf[i];  // copy buf into x.s
+        x.s = string(n);    // dar a x.s espacio para *ps
+        for (int i = 0; i < x.s.size(); ++i) x.s[i] = buf[i];  // copia buf a x.s
         delete buf;
         return x;
     }
 
-    void driver()
+    void controlador()
     {
-        X x = waste("Typical argument");
+        X x = malgasta("Argumento tipico");
         // ...
     }
 
-Yes, this is a caricature, but we have seen every individual mistake in production code, and worse.
-Note that the layout of `X` guarantees that at least 6 bytes (and most likely more) bytes are wasted.
-The spurious definition of copy operations disables move semantics so that the return operation is slow
-(please note that the Return Value Optimization, RVO, is not guaranteed here).
-The use of `new` and `delete` for `buf` is redundant; if we really needed a local string, we should use a local `string`.
-There are several more performance bugs and gratuitous complication.
+Sí, esto es una caricatura, pero hemos visto cada error individual en código de producción, y peor. Note que el arreglo de `X` garantiza que al menos 6 bytes (y posiblemente más) se desperdician. La definición espuria de las operaciones copia deshabilita la semántica mueve por lo que la operación de retorno es lenta (por favor note que aquí la optimización de valor de retorno, OVR --del inglés Return Value Optimization, RVO--, no está garantizada). El uso de `new` y `delete` para `buf` es redundante; si realmente necesitamos una cadena local, deberíamos usar un `string` local. Hay muchos más bichos de rendimiento y complicaciones gratuitas.
 
-##### Example, bad
+##### Ejemplo, malo
 
-    void lower(zstring s)
+    void minusculas(zstring s)
     {
         for (int i = 0; i < strlen(s); ++i) s[i] = tolower(s[i]);
     }
 
-Yes, this is an example from production code.
-We leave it to the reader to figure out what's wasted.
+Sí, este es un ejemplo de código de producción. Dejamos al lector averiguar qué se desperdicia.
 
-##### Note
+##### Nota
 
-An individual example of waste is rarely significant, and where it is significant, it is typically easily eliminated by an expert.
-However, waste spread liberally across a code base can easily be significant and experts are not always as available as we would like.
-The aim of this rule (and the more specific rules that support it) is to eliminate most waste related to the use of C++ before it happens.
-After that, we can look at waste related to algorithms and requirements, but that is beyond the scope of these guidelines.
+Un ejemplo individual de desperdicio es raramente significante, y donde sea significante, típicamente es fácilmente eliminado por un experto. Sin embargo, desperdicio esparcido liberalmente a través de una base de código fácilmente puede ser significante y los expertos no siempre están tan disponibles como quisiéramos. El objetivo de esta regla (y las reglas más específicas que la apoyan) es eliminar la mayoría de desperdicio relacionado con el uso de C++ antes de que suceda. Después de eso, podemos examinar los desperdicios relacionados con algoritmos y requerimientos, pero eso va más allá del alcance de estas pautas.
 
-##### Enforcement
+##### Aplicación
 
-Many more specific rules aim at the overall goals of simplicity and elimination of gratuitous waste.
+Muchas más reglas específicas persiguen los objetivos generales de simplicidad y eliminación de desperdicio gratuito.
 
-### <a name="Rp-mutable"></a>P.10: Prefer immutable data to mutable data
+### <a name="Rp-mutable"></a>P.10: Prefiera datos inmutables a datos mutables
 
-##### Reason
+##### Razón
 
-It is easier to reason about constants than about variables.
-Something immutable cannot change unexpectedly.
-Sometimes immutability enables better optimization.
-You can't have a data race on a constant.
+Es más fácil razonar sobre constantes que sobre variables. Algo inmutable no puede cambiar inesperadamente. A veces la inmutabilidad permite mejor optimización. No se puede tener una carrera de datos en una constante.
 
-See [Con: Constants and Immutability](#S-const)
+Vea [Con: Constantes e Inmutabilidad](#S-const)
 
-### <a name="Rp-library"></a>P.11: Encapsulate messy constructs, rather than spreading through the code
+### <a name="Rp-library"></a>P.11: Encapsule construcciones sucias, en lugar de esparcirlas por el código
 
-##### Reason
+##### Razón
 
-Messy code is more likely to hide bugs and harder to write.
-A good interface is easier and safer to use.
-Messy, low-level code breeds more such code.
+El código sucio es más probable que esconda bichos y es más difícil de escribir. Una buena interfaz es más fácil y segura de usar. Código sucio y de bajo nivel engendra más código así.
 
-##### Example
+##### Ejemplo
 
     int sz = 100;
     int* p = (int*) malloc(sizeof(int) * sz);
-    int count = 0;
+    int conteo = 0;
     // ...
     for (;;) {
-        // ... read an int into x, exit loop if end of file is reached ...
-        // ... check that x is valid ...
-        if (count == sz)
+        // ... leer un int a x, salir del ciclo si se alcanza el final del archivo ...
+        // ... chequear que x es válido ...
+        if (conteo == sz)
             p = (int*) realloc(p, sizeof(int) * sz * 2);
-        p[count++] = x;
+        p[conteo++] = x;
         // ...
     }
 
-This is low-level, verbose, and error-prone.
-For example, we "forgot" to test for memory exhaustion.
-Instead, we could use `vector`:
+Esto es de bajo nivel, verboso, y propenso a errores. Por ejemplo, «olvidamos» probar por agotamiento de memoria. En su lugar, podríamos usar `vector`:
 
     vector<int> v;
     v.reserve(100);
     // ...
     for (int x; cin >> x; ) {
-        // ... check that x is valid ...
+        // ... chequear que x es válido ...
         v.push_back(x);
     }
 
-##### Note
+##### Nota
 
-The standards library and the GSL are examples of this philosophy.
-For example, instead of messing with the arrays, unions, cast, tricky lifetime issues, `gsl::owner`, etc.
-that is needed to implement key abstractions, such as `vector`, `span`, `lock_guard`, and `future`, we use the libraries
-designed and implemented by people with more time and expertise than we usually have.
-Similarly, we can and should design and implement more specialized libraries, rather than leaving the users (often ourselves)
-with the challenge of repeatedly getting low-level code well.
-This is a variant of the [subset of superset principle](#R0) that underlies these guidelines.
+La biblioteca estándar y la GSL son ejemplos de esta filosofía. Por ejemplo, en lugar de ensuciarnos con las colecciones, uniones, moldes, cuestiones de vida engorrosas, `gsl::owner`, etc. que son necesarias para implementar abstracciones clave, tales como `vector`, `span`, `lock_guard`, y `future`, usamos bibliotecas diseñadas e implementadas por personas con más tiempo y experiencia de lo que usualmente tenemos. Similarmente, podemos y debemos diseñar e implementar bibliotecas más especializadas, en lugar de dejar a los usuarios (a menudo nosotros mismos) con el reto de repetidamente usar bien el código de bajo nivel. Esto es una variante del [principio de subset de superset](#R0) subyacente a estas pautas.
 
-##### Enforcement
+##### Aplicación
 
-* Look for "messy code" such as complex pointer manipulation and casting outside the implementation of abstractions.
-
+* Busque «código sucio» tales como manipulación compleja de puntero y moldeado fuera de la implementación de abstracciones.
 
 # <a name="S-interfaces"></a>I: Interfaces
 
