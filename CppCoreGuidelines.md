@@ -345,7 +345,7 @@ Podríamos haber aceptado un `double` simple (sin unidad) como delta, pero eso h
 Muy difícil en general.
 
 * Use `const` consistentemente (chequee si las funciones miembro modifican su objeto; chequee si las funciones modifican los argumentos pasados por puntero o referencia).
-* Marque usos de moldes (los moldes neutralizan el sistema de tipos).
+* Marque usos de moldes (los moldes neutralizan el sistema de tipo).
 * Detecte código que imita la biblioteca estándar (difícil).
 
 ### <a name="Rp-Cplusplus"></a>P.2: Escriba en Estándar ISO C++
@@ -838,7 +838,7 @@ Vea [Con: Constantes e Inmutabilidad](#S-const)
 
 ##### Razón
 
-El código sucio es más probable que esconda bichos y es más difícil de escribir. Una buena interfaz es más fácil y segura de usar. Código sucio y de bajo nivel engendra más código así.
+El código sucio es más probable que esconda bichos y es más difícil de escribir. Una interfaz buena es más fácil y segura de usar. Código sucio y de bajo nivel engendra más código así.
 
 ##### Ejemplo
 
@@ -17500,7 +17500,7 @@ Si se supone que algo no sea `nullptr`, dígalo:
 
 Un `span<T>` se refiere a cero o más `T` mutables al menos que `T` sea un tipo `const`.
 
-La «aritmética de punteros» se hace mejor con `span`. Un `char*` que apunta a más de un `char` pero no es una cadena estilo-C (p. ej., un puntero a un amortiguador de entrada) debe ser representado por un `span`.
+La «aritmética de punteros» se hace lo mejor con `span`. Un `char*` que apunta a más de un `char` pero no es una cadena estilo-C (p. ej., un puntero a un amortiguador de entrada) debe ser representado por un `span`.
 
 * `zstring`    // Un `char*` que se supone es una cadena estilo-C; es decir, una secuencia de `char` terminada en cero o `nullptr`.
 * `czstring`   // Un `const char*` que se supone es una cadena estilo-C; es decir, una secuencia de `const` `char` terminada en cero o `nullptr`.
