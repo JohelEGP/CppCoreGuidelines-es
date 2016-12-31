@@ -93,7 +93,7 @@ Definitions of terms used to express and discuss the rules, that are not languag
 
 Este documento es un set de pautas para usar bien C++. El objetivo de este documento es ayudar a las personas a usar C++ moderno efectivamente. Por «C++ moderno» nos referimos a C++11 y C++14 (y pronto C++17). En otras palabras, ¿cómo le gustaría que se viera su código dentro de 5 años, dado que puede comenzar ahora? ¿Y a los 10 años?
 
-Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no fuga recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
+Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no fuga recursos y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
 
 Nos preocupamos menos por las cuestiones de bajo nivel, como las convenciones de nombramiento y el estilo de sangría. Sin embargo, ningún tema que pueda ayudar a un programador está fuera de alcance.
 
@@ -128,7 +128,7 @@ Todo programador de C++. Esto incluye [programadores que podrían considerar a C
 
 ## <a name="SS-aims"></a>In.aims: Objetivos
 
-El propósito de este documento es ayudar a los desarrolladores a adoptar C++ moderno (C++11, C++14, y pronto C++17) y conseguir un estilo más uniforme a través de bases de código.
+El propósito de este documento es ayudar a los desarrolladores a adoptar C++ moderno (C++11, C++14 y pronto C++17) y conseguir un estilo más uniforme a través de bases de código.
 
 No sufrimos la ilusión de que cada una de estas reglas puede ser aplicada efectivamente a cada base de código. Actualizar sistemas viejos es difícil. Sin embargo, sí creemos que un programa que usa una regla es menos propenso a errores y más mantenible que uno que no. Con frecuencia, las reglas también encaminan a un desarrollo inicial más rápido/fácil.
 Que nosotros sepamos, estas reglas encaminan a código con un desempeño tan bueno o mejor que las técnicas más viejas y convencionales; se supone que sigan el principio de cero-sobregastos («por lo que no usas, no pagas» o «cuando usas un mecanismo de abstracción apropiadamente, recibes al menos tan buen desempeño como si lo hubieras codificado a mano usando construcciones del lenguaje de bajo nivel»).
@@ -139,13 +139,13 @@ Recuerde:
 
 Tómese el tiempo para entender las implicaciones de una regla en su programa.
 
-Estas pautas están diseñadas de acuerdo al principio de «subset de superset» ([Stroustrup05](#Stroustrup05)). No simplemente definen un subset de C++ a ser usado (por confiabilidad, seguridad, desempeño, o lo que sea). En su lugar, recomiendan vigorosamente el uso de unas cuantas «extensiones» simples ([componentes de biblioteca](#S-gsl)) que hacen del uso de las funcionalidades más propensa a errores de C++ redundantes, para que puedan ser prohibidas (en nuestro set de reglas).
+Estas pautas están diseñadas de acuerdo al principio de «subset de superset» ([Stroustrup05](#Stroustrup05)). No simplemente definen un subset de C++ a ser usado (por confiabilidad, seguridad, desempeño o lo que sea). En su lugar, recomiendan vigorosamente el uso de unas cuantas «extensiones» simples ([componentes de biblioteca](#S-gsl)) que hacen del uso de las funcionalidades más propensa a errores de C++ redundantes, para que puedan ser prohibidas (en nuestro set de reglas).
 
-Las reglas enfatizan la seguridad de tipo estática y la seguridad de recursos. Por esa razón, enfatizan las posibilidades para la revisión de rangos, para evitar evitar dereferenciar `nullptr`, para evitar punteros colgados, y el uso sistemático de excepciones (mediante RAII). En parte para lograr eso y en parte para minimizar el código oscuro como fuente de errores, estas reglas enfatizan la simplicidad y la ocultación de complejidad necesaria tras interfaces bien especificadas.
+Las reglas enfatizan la seguridad de tipo estática y la seguridad de recursos. Por esa razón, enfatizan las posibilidades para la revisión de rangos, para evitar evitar dereferenciar `nullptr`, para evitar punteros colgados y el uso sistemático de excepciones (mediante RAII). En parte para lograr eso y en parte para minimizar el código oscuro como fuente de errores, estas reglas enfatizan la simplicidad y la ocultación de complejidad necesaria tras interfaces bien especificadas.
 
 Muchas de las reglas son preceptivas. Nos sentimos incómodos con reglas que simplemente manifiestan «¡no haga eso!» sin ofrecer una alternativa. Una consecuencia de eso es que algunas reglas solo pueden ser respaldadas por heurísticas, en lugar de chequeos precisos y mecánicamente verificables. Otras reglas articulan principios generales. Para estas reglas más generales, reglas más detalladas y específicas proveen un chequeo parcial.
 
-Estas pautas tratan al núcleo de C++ y su uso. Esperamos que la mayoría de organizaciones grandes, áreas de aplicación específicas, e incluso grandes proyectos necesitarán más reglas, posiblemente más restricciones, y más soporte de biblioteca. Por ejemplo, los programadores de tiempo real crítico típicamente no pueden usar el almacenamiento libre (memoria dinámica) con libertad y estarán restringidos en su elección de bibliotecas. Alentamos el desarrollo de tales reglas más específicas como adiciones a estas pautas centrales. Construya y use su pequeña biblioteca fundamental ideal, en lugar de reducir su nivel de programación al glorificado código ensamblador.
+Estas pautas tratan al núcleo de C++ y su uso. Esperamos que la mayoría de organizaciones grandes, áreas de aplicación específicas, e incluso grandes proyectos necesitarán más reglas, posiblemente más restricciones y más soporte de biblioteca. Por ejemplo, los programadores de tiempo real crítico típicamente no pueden usar el almacenamiento libre (memoria dinámica) con libertad y estarán restringidos en su elección de bibliotecas. Alentamos el desarrollo de tales reglas más específicas como adiciones a estas pautas centrales. Construya y use su pequeña biblioteca fundamental ideal, en lugar de reducir su nivel de programación al glorificado código ensamblador.
 
 Las reglas están diseñadas para permitir su [adopción gradual](#S-modernizing).
 
@@ -155,7 +155,7 @@ Algunas reglas buscan aumentar varias formas de seguridad mientras que otras bus
 
 No se tiene la intención de que las reglas sean mínimas u ortogonales. En particular, las reglas generales pueden ser simples, pero inaplicables. Además, suele ser difícil entender las implicaciones de una regla general. Las reglas más especializadas suelen ser más fáciles de entender y aplicar, pero sin reglas generales, simplemente serían una lista larga de casos especiales. Proveemos reglas dirigidas a ayudar a novatos al igual que reglas que apoyen el uso experto. Algunas reglas pueden ser completamente aplicadas, pero otras están basadas en heurísticas.
 
-No se supone que las reglas sean leídas en serie, como un libro. Puede navegar a través de ellas mediante vínculos. Sin embargo, su principal uso intencional es ser objetivos de herramientas. Es decir, una herramienta busca violaciones y le devuelve vínculos a las reglas violadas. Las reglas entonces proveen razones, ejemplos de consecuencias potenciales de la violación, y remedios sugeridos.
+No se supone que las reglas sean leídas en serie, como un libro. Puede navegar a través de ellas mediante vínculos. Sin embargo, su principal uso intencional es ser objetivos de herramientas. Es decir, una herramienta busca violaciones y le devuelve vínculos a las reglas violadas. Las reglas entonces proveen razones, ejemplos de consecuencias potenciales de la violación y remedios sugeridos.
 
 No se tiene la intención de que las pautas sustituyan el tratamiento tutorial de C++. Si necesita un tutorial para un nivel dado de experiencia, vea [las referencias](#S-references).
 
@@ -165,9 +165,9 @@ No se supone que estas pautas estén completas o sean exactas en cada detalle t�
 
 No se tiene la intención de que las reglas le fuercen a escribir en un subset de C++ empobrecido. *Enfáticamente* no pretenden definir, digamos, un subset de C++ similar a Java. No se supone que definan el «verdadero» lenguaje C++. Valoramos la expresividad y el rendimiento incomprometido.
 
-El valor de las reglas no es neutral. Su intención es hacer del código más simple y correcto/seguro que la mayoría de código C++ existente, sin pérdida de rendimiento. Implican la prohibición de código C++ perfectamente válido que se correlaciona con errores, complejidad espuria, y rendimiento pobre.
+El valor de las reglas no es neutral. Su intención es hacer del código más simple y correcto/seguro que la mayoría de código C++ existente, sin pérdida de rendimiento. Implican la prohibición de código C++ perfectamente válido que se correlaciona con errores, complejidad espuria y rendimiento pobre.
 
-Las reglas no son perfectas. Una regla puede hacer daño al prohibir algo que es útil en una situación dada. Una regla puede hacer daño al no evitar prohibir algo que permita un error serio en una situación dada. Una regla puede hacer mucho daño al ser vaga, ambigua, inaplicable, y al permitir toda solución a un problema. Es imposible satisfacer completamente los criterios de «no hacer daño». En su lugar, nuestro objetivo es menos ambicioso: «hacer lo más bueno para la mayoría de programadores»; si no puede convivir con una regla, opóngase a esta, ignórela, pero no la agüe hasta que se vuelva insignificante. Además, sugiera una mejora.
+Las reglas no son perfectas. Una regla puede hacer daño al prohibir algo que es útil en una situación dada. Una regla puede hacer daño al no evitar prohibir algo que permita un error serio en una situación dada. Una regla puede hacer mucho daño al ser vaga, ambigua, inaplicable y al permitir toda solución a un problema. Es imposible satisfacer completamente los criterios de «no hacer daño». En su lugar, nuestro objetivo es menos ambicioso: «hacer lo más bueno para la mayoría de programadores»; si no puede convivir con una regla, opóngase a esta, ignórela, pero no la agüe hasta que se vuelva insignificante. Además, sugiera una mejora.
 
 ## <a name="SS-force"></a>In.force: Aplicación
 
@@ -182,11 +182,11 @@ Así que, necesitamos un subset que cumpla una variedad de necesidades.
 
 * Pero un subset arbitrario llevaría a un caos.
 
-Queremos pautas que ayuden a muchas personas, hagan el código más uniforme, y alienten fuertemente a la gente a modernizar su código. Queremos alentar las mejores prácticas, en lugar de dejar todo a la elección individual o presiones administrativas. Lo ideal es usar todas las reglas; eso otorga los mejores beneficios.
+Queremos pautas que ayuden a muchas personas, hagan el código más uniforme y alienten fuertemente a la gente a modernizar su código. Queremos alentar las mejores prácticas, en lugar de dejar todo a la elección individual o presiones administrativas. Lo ideal es usar todas las reglas; eso otorga los mejores beneficios.
 
-Esto conlleva a unos cuantos dilemas. Intentamos resolverlos usando herramientas. Cada regla tiene una sección de **aplicación** donde se listan ideas para su aplicación. La aplicación podría hacerse por revisión de código, por análisis estático, por el compilador, o por chequeos en tiempo de ejecución. Siempre que sea posible, preferimos el chequeado «mecánico» (los humanos son lentos, imprecisos, y se aburren fácilmente) y chequeado estático. Los chequeos en tiempo de ejecución se sugieren solo en el raro caso de que no exista alternativa; no queremos introducir «grasa distribuida». Cuando sea apropiado, etiquetamos a una regla (en la sección de **aplicación**) con el nombre de grupos de reglas relacionadas (llamados «perfiles»). Una regla puede ser parte de muchos perfiles, o de ninguno. Para comenzar, tenemos unos cuantos perfiles correspondientes a necesidades (deseos, ideales) comunes:
+Esto conlleva a unos cuantos dilemas. Intentamos resolverlos usando herramientas. Cada regla tiene una sección de **aplicación** donde se listan ideas para su aplicación. La aplicación podría hacerse por revisión de código, por análisis estático, por el compilador o por chequeos en tiempo de ejecución. Siempre que sea posible, preferimos el chequeado «mecánico» (los humanos son lentos, imprecisos y se aburren fácilmente) y chequeado estático. Los chequeos en tiempo de ejecución se sugieren solo en el raro caso de que no exista alternativa; no queremos introducir «grasa distribuida». Cuando sea apropiado, etiquetamos a una regla (en la sección de **aplicación**) con el nombre de grupos de reglas relacionadas (llamados «perfiles»). Una regla puede ser parte de muchos perfiles, o de ninguno. Para comenzar, tenemos unos cuantos perfiles correspondientes a necesidades (deseos, ideales) comunes:
 
-* **tipo**: Sin violaciones de tipo (reinterpretación de `T` como una `U` mediante moldes, uniones, o varargs).
+* **tipo**: Sin violaciones de tipo (reinterpretación de `T` como una `U` mediante moldes, uniones o varargs).
 * **bordes**: Sin violaciones de bordes (acceder más allá del rango de una colección).
 * **vida**: Sin fugas (no hacer un `delete` o hacer múltiples `delete`) y sin acceso a objetos inválidos (dereferenciar `nullptr`, usar una referencia colgada).
 
@@ -196,7 +196,7 @@ Las herramientas que implementen estas reglas deberán respetar la siguiente sin
 
     [[suppress(etiqueta)]]
 
-Donde «etiqueta» es el nombre de ancla del ítem donde la regla de aplicación aparece (p. ej., para [C.134](#Rh-public) es «Rh-public»), el nombre de un perfil en inglés («type», «bounds», y «lifetime» para tipo, bordes y vida respectivamente), o una regla específica en un perfil ([type.4](#Pro-type-cstylecast), o [bounds.2](#Pro-bounds-arrayindex)).
+Donde «etiqueta» es el nombre de ancla del ítem donde la regla de aplicación aparece (p. ej., para [C.134](#Rh-public) es «Rh-public»), el nombre de un perfil en inglés («type», «bounds» y «lifetime» para tipo, bordes y vida respectivamente) o una regla específica en un perfil ([type.4](#Pro-type-cstylecast) o [bounds.2](#Pro-bounds-arrayindex)).
 
 ## <a name="SS-struct"></a>In.struct: La estructura de este documento
 
@@ -217,7 +217,7 @@ Algunas reglas son difíciles de chequear mecánicamente, pero todas cumplen el 
 
 Es intencional que las reglas sean simples, en lugar de cuidadosamente fraseadas para mencionar cada alternativa y caso especial. Tal información puede encontrarse en las secciones de **alternativa**s y de [discusión](#S-discussion). Si no entiende una regla o está en desacuerdo con esta, por favor visite su **discusión**. Si siente que a una discusión le hace falta o está incompleta, entre una [cuestión](https://github.com/isocpp/CppCoreGuidelines/issues) explicando sus preocupaciones y posiblemente una solicitud de halado correspondiente.
 
-Esto no es un manual del lenguaje. Se supone que sea de ayuda, más que completo, totalmente preciso con los detalles técnicos, o una guía para código existente. Puede encontrar fuentes de información recomendadas en [las referencias](#S-references).
+Esto no es un manual del lenguaje. Se supone que sea de ayuda, más que completo, totalmente preciso con los detalles técnicos o una guía para código existente. Puede encontrar fuentes de información recomendadas en [las referencias](#S-references).
 
 ## <a name="SS-sec"></a>In.sec: Secciones principales
 
@@ -453,7 +453,7 @@ Estas áreas son fuentes de problemas serios (p. ej., choques y violaciones de s
 
 ##### Aplicación
 
-Podemos prohibir, restringir, o detectar por separado las categorías problema individuales, como requiera y sea factible para programas individuales. Siempre sugiera una alternativa. Por ejemplo:
+Podemos prohibir, restringir o detectar por separado las categorías problema individuales, como requiera y sea factible para programas individuales. Siempre sugiera una alternativa. Por ejemplo:
 
 * Uniones -- Use `variant` (en C++17).
 * Moldes -- Minimice su uso; las plantillas pueden ayudar.
@@ -761,7 +761,7 @@ Aplicar [el perfil de vida](#In.force) elimina las fugas. Cuando se combina con 
 
 * Examine punteros: Clasifíquelos en no-dueños (el por defecto) y dueños. Cuando sea factible, reemplace los dueños con gestores de recursos de la biblioteca estándar (como en el ejemplo de arriba). Alternativamente, marque un dueño como tal usando `owner` de [la GSL](#S-gsl).
 * Busque `new` y `delete` desnudos.
-* Busque funciones que asignan recursos conocidas que devuelvan punteros crudos (como `fopen`, `malloc`, y `strdup`).
+* Busque funciones que asignan recursos conocidas que devuelvan punteros crudos (como `fopen`, `malloc` y `strdup`).
 
 ### <a name="Rp-waste"></a>P.9: No malgaste tiempo o espacio
 
@@ -771,7 +771,7 @@ Esto es C++.
 
 ##### Nota
 
-El tiempo y espacio que utiliza bien para alcanzar una meta (p. ej., velocidad de desarrollo, seguridad de recurso, o simplificación de probar) no se malgasta. «Otro beneficio de esforzarse por la eficiencia es que el proceso te fuerza a entender el problema con más profundidad». - Alex Stepanov
+El tiempo y espacio que utiliza bien para alcanzar una meta (p. ej., velocidad de desarrollo, seguridad de recurso o simplificación de probar) no se malgasta. «Otro beneficio de esforzarse por la eficiencia es que el proceso te fuerza a entender el problema con más profundidad». - Alex Stepanov
 
 ##### Ejemplo, malo
 
@@ -855,7 +855,7 @@ El código sucio es más probable que esconda bichos y es más difícil de escri
         // ...
     }
 
-Esto es de bajo nivel, verboso, y propenso a errores. Por ejemplo, «olvidamos» probar por agotamiento de memoria. En su lugar, podríamos usar `vector`:
+Esto es de bajo nivel, verboso y propenso a errores. Por ejemplo, «olvidamos» probar por agotamiento de memoria. En su lugar, podríamos usar `vector`:
 
     vector<int> v;
     v.reserve(100);
@@ -867,7 +867,7 @@ Esto es de bajo nivel, verboso, y propenso a errores. Por ejemplo, «olvidamos»
 
 ##### Nota
 
-La biblioteca estándar y la GSL son ejemplos de esta filosofía. Por ejemplo, en lugar de ensuciarnos con las colecciones, uniones, moldes, cuestiones de vida engorrosas, `gsl::owner`, etc. que son necesarias para implementar abstracciones clave, tales como `vector`, `span`, `lock_guard`, y `future`, usamos bibliotecas diseñadas e implementadas por personas con más tiempo y experiencia de lo que usualmente tenemos. Similarmente, podemos y debemos diseñar e implementar bibliotecas más especializadas, en lugar de dejar a los usuarios (a menudo nosotros mismos) con el reto de repetidamente usar bien el código de bajo nivel. Esto es una variante del [principio de subset de superset](#R0) subyacente a estas pautas.
+La biblioteca estándar y la GSL son ejemplos de esta filosofía. Por ejemplo, en lugar de ensuciarnos con las colecciones, uniones, moldes, cuestiones de vida engorrosas, `gsl::owner`, etc. que son necesarias para implementar abstracciones clave, tales como `vector`, `span`, `lock_guard` y `future`, usamos bibliotecas diseñadas e implementadas por personas con más tiempo y experiencia de lo que usualmente tenemos. Similarmente, podemos y debemos diseñar e implementar bibliotecas más especializadas, en lugar de dejar a los usuarios (a menudo nosotros mismos) con el reto de repetidamente usar bien el código de bajo nivel. Esto es una variante del [principio de subset de superset](#R0) subyacente a estas pautas.
 
 ##### Aplicación
 
@@ -18818,7 +18818,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 
 * *abstracción*: descripción de algo que selectiva y deliberadamente ignora (oculta) detalles (p. ej., detalles de implementación); ignorancia selectiva.
 * *algoritmo*: procedimiento o fórmula para resolver un problema; serie finita de pasos computacionales que producen un resultado.
-* *alias*: manera alternativa de referirse a un objeto; a menudo un nombre, puntero, o referencia.
+* *alias*: manera alternativa de referirse a un objeto; a menudo un nombre, puntero o referencia.
 * *ámbito*: región de texto de un programa (código fuente) en la cual se puede referir a un nombre.
 * *aplicación*: programa o colección de programas que es considerada una entidad por sus usuarios.
 * *aproximación*: algo (p. ej., un valor o un diseño) que está cercano al perfecto o ideal. A menudo una aproximación es el resultado de la concesión entre ideales.
@@ -18836,7 +18836,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *caso de uso*: uso específico (típicamente simple) de un programa para probar su funcionamiento y demostrar su propósito.
 * *ciclo*: parte de un código ejecutado repetidamente; en C++, típicamente es una sentencia-for o una sentencia-while.
 * *ciclo infinito*: ciclo en el cual la condición de término nunca se vuelve verdadera. Ver iteración.
-* *clase*: tipo definido por el usuario que puede contener datos miembro, funciones miembro, y tipos miembro.
+* *clase*: tipo definido por el usuario que puede contener datos miembro, funciones miembro y tipos miembro.
 * *clase abstracta*: clase que no puede ser usada directamente para crear objetos; a menudo usada para difinir una interfaz a clases derivadas. Una clase es abstracta si tiene una función virtual pura o solo constructores protegidos.
 * *clase base*: clase usada como la base de una jerarquía de clases. Típicamente, una clase base tiene una o más funciones virtuales.
 * *clase concreta*: clase de la cual se pueden crear objetos.
@@ -18848,13 +18848,13 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *compilador*: programa que transforma el código fuente en código objeto.
 * *complejidad*: noción o medida difícil de definir precisamente de la dificultad de construir la solución a un problema o de la solución misma. A veces, complejidad es usado para (simplemente) referirse a la estimación del número de operaciones necesarias para ejecutar un algoritmo.
 * *computación*: ejecución de algún código, usualmente tomando alguna entrada y produciendo alguna salida.
-* *concepto*: (1) una noción, e idea; (2) un set de requisitos, usualmente para un argumento de plantilla.
+* *concepto*: (1) una noción e idea; (2) un set de requisitos, usualmente para un argumento de plantilla.
 * *concesión*: resultado de balancear muchos criterios de diseño e implementación.
 * *constante*: valor que no puede ser cambiado (en dado ámbito); no mutable.
 * *constructor*: operación que inicializa («construye») un objeto. Típicamente, un constructor establece una invariante y a menudo adquiere recursos necesarios para que el objeto pueda ser usado (los cuales suelen ser liberados en el destructor).
 * *contenedor*: objeto que guarda elementos (otros objetos).
 * *copia*: operación que hace que dos objetos tengan valores que comparen igual. Ver también mueve.
-* *costo*: el gasto (p. ej., en tiempo del programador, tiempo de ejecución, o espacio) de producir un programa o ejecutarlo. Idealmente, el costo debería ser una función de la complejidad.
+* *costo*: el gasto (p. ej., en tiempo del programador, tiempo de ejecución o espacio) de producir un programa o ejecutarlo. Idealmente, el costo debería ser una función de la complejidad.
 * *datos*: valores usados en una computación.
 * *declaración*: la especificación de un nombre con su tipo en un programa.
 * *definición*: la declaración de una entidad que provee toda la información necesaria para completar un programa que usa la entidad. Definición simplificada: una declaración que asigna memoria.
@@ -18893,7 +18893,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *lenguaje de programación*: un lenguaje para expresar programas.
 * *literal*: notación que directamente especifica un valor, como 12 especifica el valor entero «doce».
 * *mueve*: operación que transfiere el valor de un objeto a otro dejando atrás un valor que representa «vacío». Ver también copia.
-* *mutable*: cambiable; el opuesto de inmutable, constante, e invariable.
+* *mutable*: cambiable; el opuesto de inmutable, constante e invariable.
 * *número de coma flotante*: la aproximación de un número real en una computadora, como 7.93 y 10.78e-3.
 * *objeto*: (1) región de memoria inicializada de tipo conocido que contiene un valor de ese tipo; (2) región de memoria.
 * *ocultación*: el acto de prevenir que parte de una información sea directamente vista o accedida. Por ejemplo, un nombre en un ámbito anidado (interior) puede prevenir que el mismo nombre en un ámbito exterior (encerrador) sea directamente usado.
@@ -18914,10 +18914,10 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *puntero*: (1) valor usado para identificar un objeto con tipo en memoria; (2) variable que contiene tal valor.
 * *punto de personalización*: ???
 * *RAII*: (Resource Acquisition Is Initialization, adquisición de recurso es inicialización) es una técnica básica para la administración de recursos basada en ámbitos.
-* *rango*: secuencia de valores que pueden ser descritos por un punto de inicio y un punto final. Por ejemplo, \[0,5) se refiere a los valores 0, 1, 2, 3, y 4.
+* *rango*: secuencia de valores que pueden ser descritos por un punto de inicio y un punto final. Por ejemplo, \[0,5) se refiere a los valores 0, 1, 2, 3 y 4.
 * *recursión*: el acto de una función llamándose a sí misma. Ver también iteración.
 * *recursión infinita*: recursión que no termina hasta que la máquina se queda sin memoria para guardar las llamadas. En realidad, tal recursión nunca es infinita, sino que termina por un error de hardware.
-* *recurso*: algo que es adquirido y posteriormente debe ser liberado, como un gestor de archivo, una cerradura, o memoria. Ver también gestor, dueño.
+* *recurso*: algo que es adquirido y posteriormente debe ser liberado, como un gestor de archivo, una cerradura o memoria. Ver también gestor, dueño.
 * *redondeo*: conversión de un valor al valor matemáticamente más cercano de un tipo con menos precisión.
 * *referencia*: (1) valor que describe la ubicación de un valor con tipo en memoria; (2) variable que contiene dicho valor.
 * *requisito*: (1) descripción del comportamiento deseado de un programa o parte de un programa; (2) descripción de los supuestos que una función o plantilla hace de sus argumentos.
@@ -18927,7 +18927,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *sistema*: (1) programa o set de programas para realizar una tarea en una computadora; (2) abreviación de «sistema operativo», que consiste del ambiente de ejecución y las herramientas fundamentales de una computadora.
 * *sobrecarga*: definir dos funciones u operadores con el mismo nombre pero diferentes tipos de argumentos (operandos).
 * *software*: conjunto de partes de código y datos asociados; a menudo es usado indistintamente como programa.
-* *STL*: la parte de la biblioteca estándar con los contenedores, iteradores, y algoritmos.
+* *STL*: la parte de la biblioteca estándar con los contenedores, iteradores y algoritmos.
 * *subtipo*: tipo derivado; tipo que tiene todas las propiedades de un tipo y posiblemente más.
 * *supertipo*: tipo base; tipo que tiene un subset de las propiedades de un tipo.
 * *tipo*: algo que define el set de valores posibles y el set de operaciones para un objeto.
@@ -18936,7 +18936,7 @@ Definiciones relativamente informales de la terminología usada en las pautas (b
 * *valor*: set de bits en memoria interpretados de acuerdo a un tipo.
 * *variable*: objeto nombrado de un tipo dado; contiene un valor si no está ininicializado.
 * *variable global*: técnicamente, un objeto nombrado en ámbito de espacio de nombre.
-* *vida*: tiempo desde la inicialización de un objeto hasta que se vuelve inutilizable (sale de ámbito, es eliminado, o el programa termina).
+* *vida*: tiempo desde la inicialización de un objeto hasta que se vuelve inutilizable (sale de ámbito, es eliminado o el programa termina).
 
 # <a name="S-unclassified"></a>To-do: Unclassified proto-rules
 

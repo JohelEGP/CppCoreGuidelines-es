@@ -15,7 +15,7 @@ Muchas de las pautas utilizan la biblioteca de apoyo a las pautas. Una implement
 
 El objetivo de las pautas es ayudar a las personas a usar C++ moderno efectivamente. Por «C++ moderno» nos referimos a C++11 y C++14 (y pronto C++17). En otras palabras, ¿cómo le gustaría que se viera su código dentro de 5 años, dado que puede comenzar ahora? ¿Y a los 10 años?
 
-Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no fuga recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
+Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no fuga recursos y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
 
 Nos preocupamos menos por las cuestiones de bajo nivel, como las convenciones de nombramiento y el estilo de sangría. Sin embargo, ningún tema que pueda ayudar a un programador está fuera de alcance.
 
