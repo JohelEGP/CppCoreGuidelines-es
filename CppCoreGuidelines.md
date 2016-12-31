@@ -93,7 +93,7 @@ Definitions of terms used to express and discuss the rules, that are not languag
 
 Este documento es un set de pautas para usar bien C++. El objetivo de este documento es ayudar a las personas a usar C++ moderno efectivamente. Por «C++ moderno» nos referimos a C++11 y C++14 (y pronto C++17). En otras palabras, ¿cómo le gustaría que se viera su código dentro de 5 años, dado que puede comenzar ahora? ¿Y a los 10 años?
 
-Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no filtra recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
+Las pautas se concentran en cuestiones de relativamente alto nivel, como interfaces, administración de recursos, administración de memoria, y concurrencia. Tales reglas afectan la arquitectura de las aplicaciones y el diseño de bibliotecas. Seguir las reglas guiará a código que es seguro de tipo estáticamente, no fuga recursos, y atrapa mucho más errores de programación lógicos que el código común de hoy. Y correrá rápido -- puede costearse hacer las cosas bien.
 
 Nos preocupamos menos por las cuestiones de bajo nivel, como las convenciones de nombramiento y el estilo de sangría. Sin embargo, ningún tema que pueda ayudar a un programador está fuera de alcance.
 
@@ -188,7 +188,7 @@ Esto conlleva a unos cuantos dilemas. Intentamos resolverlos usando herramientas
 
 * **tipo**: Sin violaciones de tipo (reinterpretación de `T` como una `U` mediante moldes, uniones, o varargs).
 * **bordes**: Sin violaciones de bordes (acceder más allá del rango de una colección).
-* **vida**: Sin filtros (no hacer un `delete` o hacer múltiples `delete`) y sin acceso a objetos inválidos (dereferenciar `nullptr`, usar una referencia colgada).
+* **vida**: Sin fugas (no hacer un `delete` o hacer múltiples `delete`) y sin acceso a objetos inválidos (dereferenciar `nullptr`, usar una referencia colgada).
 
 La intención de los perfiles es ser usados por herramientas, pero también son de ayuda al lector humano. No limitamos nuestro comentario en las secciones de **aplicación** a las cosas que sabemos aplicar; algunos comentarios no son más que deseos que podrían inspirar a un constructor de herramienta.
 
@@ -269,7 +269,7 @@ Resumen de reglas de filosofía:
 * [P.5: Prefiera chequear en tiempo de compilación a chequear en tiempo de ejecución](#Rp-compile-time)
 * [P.6: Lo que no se pueda chequear en tiempo de compilación debería ser chequeable en tiempo de ejecución](#Rp-run-time)
 * [P.7: Atrape errores de tiempo de ejecución temprano](#Rp-early)
-* [P.8: No filtre ningún recurso](#Rp-leak)
+* [P.8: No fuge ningún recurso](#Rp-leak)
 * [P.9: No malgaste tiempo o espacio](#Rp-waste)
 * [P.10: Prefiera datos inmutables a datos mutables](#Rp-mutable)
 * [P.11: Encapsule construcciones sucias, en lugar de esparcirlas por el código](#Rp-library)
@@ -720,7 +720,7 @@ The physical law for a jet (`e * e < x * x + y * y + z * z`) is not an invariant
 * Busque datos estructurados (objetos de clases con invariantes) siendo convertidos a cadenas.
 * ???
 
-### <a name="Rp-leak"></a>P.8: No filtre ningún recurso
+### <a name="Rp-leak"></a>P.8: No fuge ningún recurso
 
 ##### Razón
 
@@ -732,7 +732,7 @@ Incluso un crecimiento pequeño en recursos hará que, con el tiempo, se exhaust
     {
         FILE* entrada = fopen(nombre, "r");
         // ...
-        if (algo) return;   // nombre: si algo == true, se filtra un gestor de archivo
+        if (algo) return;   // nombre: si algo == true, se fuga un gestor de archivo
         // ...
         fclose(entrada);
     }
@@ -743,7 +743,7 @@ Prefiera [RAII](#Rr-raii):
     {
         ifstream entrada {nombre};
         // ...
-        if (algo) return;   // bueno: no filtra
+        if (algo) return;   // bueno: no fuga
         // ...
     }
 
@@ -751,11 +751,11 @@ Prefiera [RAII](#Rr-raii):
 
 ##### Nota
 
-Un filtro es coloquialmente «cualquier cosa que no se limpia». La clasificación más importante es «cualquier cosa que ya no puede ser limpiada». Por ejemplo, asignar un objeto en el montón y entonces perder el último puntero que apunta a esa asignación. Esta regla no debe ser tomada como requerimiento de que las asignaciones dentro de objetos de larga vida deben ser devueltas durante el apagado del programa. Por ejemplo, depender de la limpieza garantizada por un sistema como el cerrado de archivos y la deasignación de memoria tras el apagado del proceso puede simplificar el código. Sin embargo, depender de abstracciones que limpian implícitamente puede ser igual de simple, y a menudo más seguro.
+Una fuga es coloquialmente «cualquier cosa que no se limpia». La clasificación más importante es «cualquier cosa que ya no puede ser limpiada». Por ejemplo, asignar un objeto en el montón y entonces perder el último puntero que apunta a esa asignación. Esta regla no debe ser tomada como requerimiento de que las asignaciones dentro de objetos de larga vida deben ser devueltas durante el apagado del programa. Por ejemplo, depender de la limpieza garantizada por un sistema como el cerrado de archivos y la deasignación de memoria tras el apagado del proceso puede simplificar el código. Sin embargo, depender de abstracciones que limpian implícitamente puede ser igual de simple, y a menudo más seguro.
 
 ##### Nota
 
-Aplicar [el perfil de vida](#In.force) elimina los filtros. Cuando se combina con la seguridad de recursos proveída por [RAII](#Rr-raii), elimina la necesidad de «colección de basura» (al no generar basura). Combine esto con la aplicación de [los perfiles de tipo y bordes](#In.force) y obtiene seguridad completa de tipo y recurso, garantizada por herramientas.
+Aplicar [el perfil de vida](#In.force) elimina las fugas. Cuando se combina con la seguridad de recursos proveída por [RAII](#Rr-raii), elimina la necesidad de «colección de basura» (al no generar basura). Combine esto con la aplicación de [los perfiles de tipo y bordes](#In.force) y obtiene seguridad completa de tipo y recurso, garantizada por herramientas.
 
 ##### Aplicación
 
