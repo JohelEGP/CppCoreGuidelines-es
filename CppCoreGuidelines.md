@@ -875,502 +875,466 @@ La biblioteca estándar y la GSL son ejemplos de esta filosofía. Por ejemplo, e
 
 # <a name="S-interfaces"></a>I: Interfaces
 
-An interface is a contract between two parts of a program. Precisely stating what is expected of a supplier of a service and a user of that service is essential.
-Having good (easy-to-understand, encouraging efficient use, not error-prone, supporting testing, etc.) interfaces is probably the most important single aspect of code organization.
+Una interfaz es un contrato entre dos partes de un programa. Manifestar precisamente lo que se espera del proveedor de un servicio y un usuario de ese servicio es esencial. Tener interfaces buenas (fáciles de entender, promoviendo el uso eficiente, no propensas a errores, que permiten probar) es probablemente el aspecto más importante de la organización de código.
 
-Interface rule summary:
+Resumen de reglas de interfaces:
 
-* [I.1: Make interfaces explicit](#Ri-explicit)
-* [I.2: Avoid global variables](#Ri-global)
-* [I.3: Avoid singletons](#Ri-singleton)
-* [I.4: Make interfaces precisely and strongly typed](#Ri-typed)
-* [I.5: State preconditions (if any)](#Ri-pre)
-* [I.6: Prefer `Expects()` for expressing preconditions](#Ri-expects)
-* [I.7: State postconditions](#Ri-post)
-* [I.8: Prefer `Ensures()` for expressing postconditions](#Ri-ensures)
-* [I.9: If an interface is a template, document its parameters using concepts](#Ri-concepts)
-* [I.10: Use exceptions to signal a failure to perform a required tasks](#Ri-except)
-* [I.11: Never transfer ownership by a raw pointer (`T*`)](#Ri-raw)
-* [I.12: Declare a pointer that must not be null as `not_null`](#Ri-nullptr)
-* [I.13: Do not pass an array as a single pointer](#Ri-array)
-* [I.22: Avoid complex initialization of global objects](#Ri-global-init)
-* [I.23: Keep the number of function arguments low](#Ri-nargs)
-* [I.24: Avoid adjacent unrelated parameters of the same type](#Ri-unrelated)
-* [I.25: Prefer abstract classes as interfaces to class hierarchies](#Ri-abstract)
-* [I.26: If you want a cross-compiler ABI, use a C-style subset](#Ri-abi)
+* [I.1: Haga explícita las interfaces](#Ri-explicit)
+* [I.2: Evite las variables globales](#Ri-global)
+* [I.3: Evite los semifallos](#Ri-singleton)
+* [I.4: Haga interfaces precisas y fuertemente tipadas](#Ri-typed)
+* [I.5: Manifieste precondiciones (de haber)](#Ri-pre)
+* [I.6: Prefiera `Expects()` para expresar precondiciones](#Ri-expects)
+* [I.7: Manifieste poscondiciones](#Ri-post)
+* [I.8: Prefiera `Ensures()` para expresar poscondiciones](#Ri-ensures)
+* [I.9: Si una interfaz es una plantilla, documente sus parámetros usando conceptos](#Ri-concepts)
+* [I.10: Use excepciones para señalar el fallo de realizar una tarea requerida](#Ri-except)
+* [I.11: Nunca transfiera posesión con un puntero crudo (`T*`)](#Ri-raw)
+* [I.12: Declare un puntero que no debe ser nulo como `not_null`](#Ri-nullptr)
+* [I.13: No pase una colección como un solo puntero](#Ri-array)
+* [I.22: Evite la inicialización compleja de objetos globales](#Ri-global-init)
+* [I.23: Mantenga el número de argumentos de función bajo](#Ri-nargs)
+* [I.24: Evite parámetros adyacentes no relacionados del mismo tipo](#Ri-unrelated)
+* [I.25: Prefiera clases abstractas como interfaces de jerarquías de clases](#Ri-abstract)
+* [I.26: Si quiere ABI a través de compiladores, use un subset estilo-C](#Ri-abi)
 
-See also
+Vea también
 
-* [F: Functions](#S-functions)
-* [C.concrete: Concrete types](#SS-concrete)
-* [C.hier: Class hierarchies](#SS-hier)
-* [C.over: Overloading and overloaded operators](#SS-overload)
-* [C.con: Containers and other resource handles](#SS-containers)
-* [E: Error handling](#S-errors)
-* [T: Templates and generic programming](#S-templates)
+* [F: Funciones](#S-functions)
+* [C.concrete: Tipos concretos](#SS-concrete)
+* [C.hier: Jerarquías de clases](#SS-hier)
+* [C.over: Sobrecargar y operadores sobrecargados](#SS-overload)
+* [C.con: Contenedores y otros administradores de recursos](#SS-containers)
+* [E: Gestión de errores](#S-errors)
+* [T: Plantillas y programación genérica](#S-templates)
 
-### <a name="Ri-explicit"></a>I.1: Make interfaces explicit
+### <a name="Ri-explicit"></a>I.1: Haga explícita las interfaces
 
-##### Reason
+##### Razón
 
-Correctness. Assumptions not stated in an interface are easily overlooked and hard to test.
+Exactitud. Las asunciones no manifestadas en una interfaz son despistadas con facilidad y difíciles de probar.
 
-##### Example, bad
+##### Ejemplo, malo
 
-Controlling the behavior of a function through a global (namespace scope) variable (a call mode) is implicit and potentially confusing. For example:
+Controlar el comportamiento de una función mediante una variable global (de ámbito espacio de nombre) (un modo de llamada) es implícito y potencialmente confuso. Por ejemplo:
 
     int rnd(double d)
     {
-        return (rnd_up) ? ceil(d) : d;    // don't: "invisible" dependency
+        return (rnd_arriba) ? ceil(d) : d;    // no haga: dependencia «invisible»
     }
 
-It will not be obvious to a caller that the meaning of two calls of `rnd(7.2)` might give different results.
+No será obvio a un llamador que el significado de dos llamadas de `rnd(7.2)` podrían dar resultados diferentes.
 
-##### Exception
+##### Excepción
 
-Sometimes we control the details of a set of operations by an environment variable, e.g., normal vs. verbose output or debug vs. optimized.
-The use of a non-local control is potentially confusing, but controls only implementation details of otherwise fixed semantics.
+A veces controlamos los detalles de un set de operaciones por una variable de ambiente, p. ej., salida normal contra verbosa o depurado contra optimizado. El uso de un control no local es potencialmente confuso, pero solo controla detalles de implementación que de otra manera tendrían semántica fija.
 
-##### Example, bad
+##### Ejemplo, malo
 
-Reporting through non-local variables (e.g., `errno`) is easily ignored. For example:
+Reportes mediante variables no-locales (p. ej., `errno`) es ignorado con facilidad. Por ejemplo:
 
-    // don't: no test of printf's return value
-    fprintf(connection, "logging: %d %d %d\n", x, y, s);
+    // no haga: no prueba el valor de retorno de printf
+    fprintf(conexion, "registrando: %d %d %d\n", x, y, s);
 
-What if the connection goes down so that no logging output is produced? See I.??.
+¿Qué tal si la conexión se cae por lo que no se produce un registro de salida? See I.??.
 
-**Alternative**: Throw an exception. An exception cannot be ignored.
+**Alternativa**: Arroje una excepción. Una excepción no puede ser ignorada.
 
-**Alternative formulation**: Avoid passing information across an interface through non-local or implicit state.
-Note that non-`const` member functions pass information to other member functions through their object's state.
+**Formulación alternativa**: Evite pasar información a través de una interfaz por estado no-local o implícito. Note que las funciones miembro no-`const` pasan información a otras funciones miembro a través del estado del objeto.
 
-**Alternative formulation**: An interface should be a function or a set of functions.
-Functions can be template functions and sets of functions can be classes or class templates.
+**Formulación alternativa**: Una interfaz debe ser una función o un set de funciones. Las funciones pueden ser funciones plantilla y los sets de funciones pueden ser clases o clases plantilla.
 
-##### Enforcement
+##### Aplicación
 
-* (Simple) A function should not make control-flow decisions based on the values of variables declared at namespace scope.
-* (Simple) A function should not write to variables declared at namespace scope.
+* (Simple) Una función no debe hacer decisiones del flujo de control basado en valores de variables declaradas en ámbito de espacio de nombre.
+* (Simple) Una función no debe escribir a variables declaradas en ámbito de espacio de nombre.
 
-### <a name="Ri-global"></a>I.2 Avoid global variables
+### <a name="Ri-global"></a>I.2 Evite las variables globales
 
-##### Reason
+##### Razón
 
-Non-`const` global variables hide dependencies and make the dependencies subject to unpredictable changes.
+Las variables globales no-`const` esconden dependencias y someten las dependencias a cambios impredecibles.
 
-##### Example
+##### Ejemplo
 
-    struct Data {
-        // ... lots of stuff ...
-    } data;            // non-const data
+    struct Datos {
+        // ... muchas cosas ...
+    } datos;            // datos no-const
 
-    void compute()     // don't
+    void compute()     // no haga
     {
-        // ... use data ...
+        // ... usar data ...
     }
 
-    void output()     // don't
+    void salida()     // no haga
     {
-        // ... use data ...
+        // ... usar data ...
     }
 
-Who else might modify `data`?
+¿Quién más podría modificar `data`?
 
-##### Note
+##### Nota
 
-Global constants are useful.
+Las constantes globales son útiles.
 
-##### Note
+##### Nota
 
-The rule against global variables applies to namespace scope variables as well.
+La regla contra variables globales aplica también a variables en ámbito de espacio de nombre.
 
-**Alternative**: If you use global (more generally namespace scope data) to avoid copying, consider passing the data as an object by reference to `const`.
-Another solution is to define the data as the state of some object and the operations as member functions.
+**Alternativa**: Si usa datos globales (o más generalmente en ámbito de espacio de nombre) para evitar copiar, considere pasar los datos como un objeto por referencia a `const`. Otra solución es definir los datos como el estado de algún objeto y las operaciones como funciones miembro.
 
-**Warning**: Beware of data races: If one thread can access nonlocal data (or data passed by reference) while another thread executes the callee, we can have a data race.
-Every pointer or reference to mutable data is a potential data race.
+**Advertencia**: Cuidado con las carreras de datos: Si un hilo puede acceder datos no locales (o datos pasados por referencia) mientras otro hilo ejecuta al receptor, podemos tener una carrera de datos. Cada puntero o referencia a datos mutables es una carrera de datos potencial.
 
-##### Note
+##### Nota
 
-You cannot have a race condition on immutable data.
+No se puede tener una condición de carrera en datos inmutables.
 
-**References**: See the [rules for calling functions](#SS-call).
+**Referencias**: Vea las [reglas para llamar funciones](#SS-call).
 
-##### Enforcement
+##### Aplicación
 
-(Simple) Report all non-`const` variables declared at namespace scope.
+(Simple) Reporte todas las variables no-`const` declaradas en ámbito de espacio de nombre.
 
-### <a name="Ri-singleton"></a>I.3: Avoid singletons
+### <a name="Ri-singleton"></a>I.3: Evite los semifallos
 
-##### Reason
+##### Razón
 
-Singletons are basically complicated global objects in disguise.
+Los semifallos básicamente son objetos globales complicados disfrazados.
 
-##### Example
+##### Ejemplo
 
-    class Singleton {
-        // ... lots of stuff to ensure that only one Singleton object is created,
-        // that it is initialized properly, etc.
+    class Semifallo {
+        // ... muchas cosas para asegurar que solo un objeto Semifallo sea creado,
+        // que sea inicializado apropiadamente, etc.
     };
 
-There are many variants of the singleton idea.
-That's part of the problem.
+Hay muchas variantes de la idea del semifallo. Eso es parte del problema.
 
-##### Note
+##### Nota
 
-If you don't want a global object to change, declare it `const` or `constexpr`.
+Si no quiere que un objeto global cambie, declárelo `const` o `constexpr`.
 
-##### Exception
+##### Excepción
 
-You can use the simplest "singleton" (so simple that it is often not considered a singleton) to get initialization on first use, if any:
+Puede usar el «semifallo» más simple (tan simple que a menudo no es considerado un semifallo) para inicializarlo en el primer uso, de haberlo:
 
-    X& myX()
+    X& miX()
     {
-        static X my_x {3};
-        return my_x;
+        static X mi_x {3};
+        return mi_x;
     }
 
-This is one of the most effective solutions to problems related to initialization order.
-In a multi-threaded environment the initialization of the static object does not introduce a race condition
-(unless you carelessly access a shared object from within its constructor).
+Esta es una de las soluciones más efectivas a los problemas relacionados con el orden de inicialización. En un ambiente multi-hilos, la inicialización del objeto estático no introduce una condición de carrera (al menos que acceda descuidadamente a un objeto compartido desde su constructor).
 
-Note that the initialization of a local `static` does not imply a race condition.
-However, if the destruction of `X` involves an operation that needs to be synchronized we must use a less simple solution.
-For example:
+Note que la inicialización de una `static` local no implica una condición de carrera. Sin embargo, si la destrucción de `X` involucra una operación que necesita ser sincronizada, debemos usar una solución menos simple. Por ejemplo:
 
-    X& myX()
+    X& miX()
     {
         static auto p = new X {3};
-        return *p;  // potential leak
+        return *p;  // fuga potencial
     }
 
-Now someone has to `delete` that object in some suitably thread-safe way.
-That's error-prone, so we don't use that technique unless
+Ahora alguien tiene que hacer `delete` al objeto de una forma seguro-de-hilo apropiada. Eso es propenso a errores, así que no usamos esa técnica al menos que:
 
-* `myX` is in multithreaded code,
-* that `X` object needs to be destroyed (e.g., because it releases a resource), and
-* `X`'s destructor's code needs to be synchronized.
+* `miX` esté en código multihilos,
+* que `X` sea un objeto que necesite ser destruido (p. ej., porque libera un recurso), y
+* el código del destructor de `X` necesite ser sincronizado.
 
-If you, as many do, define a singleton as a class for which only one object is created, functions like `myX` are not singletons, and this useful technique is not an exception to the no-singleton rule.
+Si usted, como hacen muchos, define un semifallo como una clase para la cual solo se crea un objeto, funciones como `miX` no son semifallos, y esta técnica útil no es una excepción a la regla de no-semifallos.
 
-##### Enforcement
+##### Aplicación
 
-Very hard in general.
+Muy difícil en general.
 
-* Look for classes with names that include `singleton`.
-* Look for classes for which only a single object is created (by counting objects or by examining constructors).
-* If a class X has a public static function that contains a function-local static of the class' type X and returns a pointer or reference to it, ban that.
+* Busque clases con nombres que incluyan `singleton`.
+* Busque clases para las cuales solo se crea un objeto (al contar objetos o examinar constructores).
+* Si una clase X tiene una función pública estática que contiene una estática local-de-función del tipo de la clase X y devuelve un puntero o referencia a esta, prohíba eso.
 
-### <a name="Ri-typed"></a>I.4: Make interfaces precisely and strongly typed
+### <a name="Ri-typed"></a>I.4: Haga interfaces precisas y fuertemente tipadas
 
-##### Reason
+##### Razón
 
-Types are the simplest and best documentation, have well-defined meaning, and are guaranteed to be checked at compile time.
-Also, precisely typed code is often optimized better.
+Los tipos son la más simple y mejor documentación, tienen un comportamiento bien definido, y se garantiza su chequeo en tiempo de compilación. Además, el código precisamente tipado es a menudo optimizado mejor.
 
-##### Example, don't
+##### Ejemplo, no haga
 
-Consider:
+Considere:
 
-    void pass(void* data);    // void* is suspicious
+    void pasa(void* datos);    // void* es sospechoso
 
-Now the callee has to cast the data pointer (back) to a correct type to use it. That is error-prone and often verbose.
-Avoid `void*`, especially in interfaces.
-Consider using a `variant` or a pointer to base instead.
+Ahora el receptor tiene que moldear el puntero (de vuelta) al tipo correcto para usarlo. Esto es propenso a errores y a menudo verboso. Evite los `void*`, especialmente en interfaces. En su lugar, considere usar `variant` o un puntero a base.
 
-**Alternative**: Often, a template parameter can eliminate the `void*` turning it into a `T*` or `T&`.
-For generic code these `T`s can be general or concept constrained template parameters.
+**Alternativa**: A menudo, un parámetro de plantilla puede eliminar el `void*`, volviéndolo una `T*` o `T&`. Para el código genérico, estas `T` pueden ser parámetros de plantilla generales o constreñidos por conceptos.
 
-##### Example, bad
+##### Ejemplo, malo
 
-Consider:
+Considere:
 
-    void draw_rect(int, int, int, int);   // great opportunities for mistakes
+    void dibujar_rect(int, int, int, int);   // estupendas oportunidades para errores
 
-    draw_rect(p.x, p.y, 10, 20);          // what does 10, 20 mean?
+    dibujar_rect(p.x, p.y, 10, 20);          // ¿qué significa 10, 20?
 
-An `int` can carry arbitrary forms of information, so we must guess about the meaning of the four `int`s.
-Most likely, the first two are an `x`,`y` coordinate pair, but what are the last two?
-Comments and parameter names can help, but we could be explicit:
+Un `int` puede llevar formas arbitrarias de información, así que debemos adivinar sobre el significado de los cuatro `int`. Muy posiblemente, los dos primeros son un par de coordenadas `x`,`y`, ¿pero qué son los últimos dos? Los comentarios y nombres de los parámetros pueden ayudar, pero podríamos ser explícitos:
 
-    void draw_rectangle(Point top_left, Point bottom_right);
-    void draw_rectangle(Point top_left, Size height_width);
+    void dibujar_rectangulo(Punto cima_izquierda, Punto pie_derecho);
+    void dibujar_rectangulo(Punto cima_izquierda, Tamano altura_anchura);
 
-    draw_rectangle(p, Point{10, 20});  // two corners
-    draw_rectangle(p, Size{10, 20});   // one corner and a (height, width) pair
+    dibujar_rectangulo(p, Punto{10, 20});  // dos esquinas
+    dibujar_rectangulo(p, Tamano{10, 20});   // una esquina y un par (altura, anchura)
 
-Obviously, we cannot catch all errors through the static type system
-(e.g., the fact that a first argument is supposed to be a top-left point is left to convention (naming and comments)).
+Obviamente, no podemos atrapar todos los errores a través del sistema de tipo estático (p. ej., el hecho de que un primer argumento se supone que es un punto cima-izquierda se deja a convención --nombrado y comentarios--).
 
-##### Example, bad
+##### Ejemplo, malo
 
-In the following example, it is not clear from the interface what `time_to_blink` means: Seconds? Milliseconds?
+En el siguiente ejemplo, no está claro en la interfaz qué significa `tiempo_para_parpadear`: ¿Segundos? ¿Milisegundos?
 
-    void blink_led(int time_to_blink) // bad -- the unit is ambiguous
+    void parpadear_led(int tiempo_para_parpadear) // malo -- la unidad es ambigua
     {
         // ...
-        // do something with time_to_blink
+        // hacer algo con tiempo_para_parpadear
         // ...
     }
 
-    void use()
+    void usar()
     {
-        blink_led(2);
+        parpadear_led(2);
     }
 
-##### Example, good
+##### Ejemplo, bueno
 
-`std::chrono::duration` types (C++11) helps making the unit of time duration explicit.
+Los tipos `std::chrono::duration` (C++11) ayudan a hacer la unidad de duración de tiempo explícita.
 
-    void blink_led(milliseconds time_to_blink) // good -- the unit is explicit
+    void parpadear_led(milliseconds tiempo_para_parpadear) // bien -- la unidad es explícita
     {
         // ...
-        // do something with time_to_blink
+        // hacer algo con tiempo_para_parpadear
         // ...
     }
 
-    void use()
+    void usar()
     {
-        blink_led(1500ms);
+        parpadear_led(1500ms);
     }
 
-The function can also be written in such a way that it will accept any time duration unit.
+La función puede ser escrita de tal manera que acepte cualquier unidad de duración de tiempo.
 
     template<class rep, class period>
-    void blink_led(duration<rep, period> time_to_blink) // good -- accepts any unit
+    void parpadear_led(duration<rep, period> tiempo_para_parpadear) // bien -- acepta cualquier unidad
     {
-        // assuming that millisecond is the smallest relevant unit
-        auto milliseconds_to_blink = duration_cast<milliseconds>(time_to_blink);
+        // asumiendo que milisegundos es la unidad relevante más pequeña
+        auto milisegundos_para_parpadear = duration_cast<milliseconds>(tiempo_para_parpadear);
         // ...
-        // do something with milliseconds_to_blink
+        // hacer algo con milisegundos_para_parpadear
         // ...
     }
 
-    void use()
+    void usar()
     {
-        blink_led(2s);
-        blink_led(1500ms);
+        parpadear_led(2s);
+        parpadear_led(1500ms);
     }
 
-##### Enforcement
+##### Aplicación
 
-* (Simple) Report the use of `void*` as a parameter or return type.
-* (Hard to do well) Look for member functions with many built-in type arguments.
+* (Simple) Reporte el uso de `void*` como parámetro o tipo de retorno.
+* (Difícil de hacer bien) Busque funciones miembro con muchos argumentos de tipo primitivo.
 
-### <a name="Ri-pre"></a>I.5: State preconditions (if any)
+### <a name="Ri-pre"></a>I.5: Manifieste precondiciones (de haber)
 
-##### Reason
+##### Razón
 
-Arguments have meaning that may constrain their proper use in the callee.
+Los argumentos tienen significado que podrían constreñir su uso apropiado en el receptor.
 
-##### Example
+##### Ejemplo
 
-Consider:
+Considere:
 
     double sqrt(double x);
 
-Here `x` must be nonnegative. The type system cannot (easily and naturally) express that, so we must use other means. For example:
+Aquí `x` debe ser no-negativo. El sistema de tipo no puede (fácil y naturalmente) expresar eso, así que debemos usar otros medios. Por ejemplo:
 
-    double sqrt(double x); // x must be nonnegative
+    double sqrt(double x); // x debe ser no-negativo
 
-Some preconditions can be expressed as assertions. For example:
+Algunas precondiciones pueden ser expresadas como aserciones. Por ejemplo:
 
     double sqrt(double x) { Expects(x >= 0); /* ... */ }
 
-Ideally, that `Expects(x >= 0)` should be part of the interface of `sqrt()` but that's not easily done. For now, we place it in the definition (function body).
+Idealmente, esa `Expects(x >= 0)` debería ser parte de la interfaz de `sqrt()`, pero eso no se hace con facilidad. Por ahora, la colocamos en la definición (cuerpo de función).
 
-**References**: `Expects()` is described in [GSL](#S-gsl).
+**Referencias**: `Expects()` se describe en [GSL](#S-gsl).
 
-##### Note
+##### Nota
 
-Prefer a formal specification of requirements, such as `Expects(p != nullptr);`.
-If that is infeasible, use English text in comments, such as `// the sequence [p:q) is ordered using <`.
+Prefiera una especificación formal de requisitos, como `Expects(p != nullptr);`. Si eso no es factible, use texto inglés en comentarios, como `// the sequence [p:q) is ordered using <`.
 
-##### Note
+##### Nota
 
-Most member functions have as a precondition that some class invariant holds.
-That invariant is established by a constructor and must be reestablished upon exit by every member function called from outside the class.
-We don't need to mention it for each member function.
+La mayoría de funciones miembro tienen como precondición que una invariante de la clase se cumple. Esa invariante es establecida por el constructor y debe ser reestablecida tras la salida de cada función miembro llamada desde fuera de la clase. No necesitamos mencionarla para cada función miembro.
 
-##### Enforcement
+##### Aplicación
 
-(Not enforceable)
+(No aplicable)
 
-**See also**: The rules for passing pointers. ???
+**Vea también**: Las reglas para pasar punteros. ???
 
-### <a name="Ri-expects"></a>I.6: Prefer `Expects()` for expressing preconditions
+### <a name="Ri-expects"></a>I.6: Prefiera `Expects()` para expresar precondiciones
 
-##### Reason
+##### Razón
 
-To make it clear that the condition is a precondition and to enable tool use.
+Para dejar claro que la condición es una precondición y habilitar el uso de herramientas.
 
-##### Example
+##### Ejemplo
 
-    int area(int height, int width)
+    int area(int altura, int anchura)
     {
-        Expects(height > 0 && width > 0);            // good
-        if (height <= 0 || width <= 0) my_error();   // obscure
+        Expects(altura > 0 && anchura > 0);            // bien
+        if (altura <= 0 || anchura <= 0) mi_error();   // oscuro
         // ...
     }
 
-##### Note
+##### Nota
 
-Preconditions can be stated in many ways, including comments, `if`-statements, and `assert()`.
-This can make them hard to distinguish from ordinary code, hard to update, hard to manipulate by tools, and may have the wrong semantics (do you always want to abort in debug mode and check nothing in productions runs?).
+Las precondiciones pueden ser manifestadas de muchas maneras, incluyendo comentarios, sentencias-`if` y `assert()`. Esto puede hacer difícil distinguirlas del código ordinario, difícil de actualizar, difícil de manipular con herramientas y pueden tener la semántica equivocada (¿quiere siempre abortar en modo de depuración y chequear nada en ejecuciones de producción?).
 
-##### Note
+##### Nota
 
-Preconditions should be part of the interface rather than part of the implementation,
-but we don't yet have the language facilities to do that.
-Once language support becomes available (e.g., see the [contract proposal](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf)) we will adopt the standard version of preconditions, postconditions, and assertions.
+Las precondiciones deberían ser parte de la interfaz en lugar de parte de la implementación, pero todavía no tenemos las facilidades del lenguaje para hacer eso. Una vez el apoyo del lenguaje esté disponible (p. ej. vea la [propuesta de contrato](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf)), adoptaremos la versión estándar de precondiciones, poscondiciones y aserciones.
 
-##### Note
+##### Nota
 
-`Expects()` can also be used to check a condition in the middle of an algorithm.
+`Expects()` también puede ser usado para chequear una condición en medio de un algoritmo.
 
-##### Enforcement
+##### Aplicación
 
-(Not enforceable) Finding the variety of ways preconditions can be asserted is not feasible. Warning about those that can be easily identified (`assert()`) has questionable value in the absence of a language facility.
+(No aplicable) Encontrar la variedad de formas en que las precondiciones pueden ser asertadas no es factible. Advertir sobre las que puedan ser fácilmente identificadas (`assert()`) tiene un valor cuestionable en ausencia de una facilidad del lenguaje.
 
-### <a name="Ri-post"></a>I.7: State postconditions
+### <a name="Ri-post"></a>I.7: Manifieste poscondiciones
 
-##### Reason
+##### Razón
 
-To detect misunderstandings about the result and possibly catch erroneous implementations.
+Para detectar malentendidos sobre el resultado y posiblemente atrapar implementaciones erróneas.
 
-##### Example, bad
+##### Ejemplo, malo
 
-Consider:
+Considere:
 
-    int area(int height, int width) { return height * width; }  // bad
+    int area(int altura, int anchura) { return altura * anchura; }  // malo
 
-Here, we (incautiously) left out the precondition specification, so it is not explicit that height and width must be positive.
-We also left out the postcondition specification, so it is not obvious that the algorithm (`height * width`) is wrong for areas larger than the largest integer.
-Overflow can happen.
-Consider using:
+Aquí, hemos (descuidadamente) omitido la especificación de precondición, así que no es explícito que la altura y anchura deben ser positivas. También omitimos la especificación de poscondición, así que no es obvio que el algoritmo (`altura * anchura`) es erróneo para áreas más largas que el entero más grande. Puede haber desbordamiento. Considere usar:
 
-    int area(int height, int width)
+    int area(int altura, int anchura)
     {
-        auto res = height * width;
+        auto res = altura * anchura;
         Ensures(res > 0);
         return res;
     }
 
-##### Example, bad
+##### Ejemplo, malo
 
-Consider a famous security bug:
+Considere un bicho de seguridad famoso:
 
-    void f()    // problematic
+    void f()    // problemático
     {
-        char buffer[MAX];
+        char amortiguador[MAX];
         // ...
-        memset(buffer, 0, MAX);
+        memset(amortiguador, 0, MAX);
     }
 
-There was no postcondition stating that the buffer should be cleared and the optimizer eliminated the apparently redundant `memset()` call:
+No hubo poscondición manifestando que el amortiguador debería estar limpio y el optimizador eliminó la llamada aparentemente redundante `memset()`:
 
-    void f()    // better
+    void f()    // mejor
     {
-        char buffer[MAX];
+        char amortiguador[MAX];
         // ...
-        memset(buffer, 0, MAX);
-        Ensures(buffer[0] == 0);
+        memset(amortiguador, 0, MAX);
+        Ensures(amortiguador[0] == 0);
     }
 
-##### Note
+##### Nota
 
-Postconditions are often informally stated in a comment that states the purpose of a function; `Ensures()` can be used to make this more systematic, visible, and checkable.
+Las poscondiciones a menudo se manifiestan informalmente en comentarios que establecen el propósito de la función; `Ensures()` puede ser usado para hacer esto más sistemático, visible y chequeable.
 
-##### Note
+##### Nota
 
-Postconditions are especially important when they relate to something that is not directly reflected in a returned result, such as a state of a data structure used.
+Las poscondiciones son especialmente importantes cuando se relacionan con algo que no se refleja directamente en el resultado devuelto, como el estado de la estructura de datos usada.
 
-##### Example
+##### Ejemplo
 
-Consider a function that manipulates a `Record`, using a `mutex` to avoid race conditions:
+Considere una función que manipula un `Registro`, usando un `mutex` para evitar condiciones de carrera:
 
     mutex m;
 
-    void manipulate(Record& r)    // don't
+    void manipular(Registro& r)    // no haga
     {
         m.lock();
-        // ... no m.unlock() ...
+        // ... sin m.unlock() ...
     }
 
-Here, we "forgot" to state that the `mutex` should be released, so we don't know if the failure to ensure release of the `mutex` was a bug or a feature.
-Stating the postcondition would have made it clear:
+Aquí, «olvidamos» manifestar que el `mutex` debe ser liberado, así que no sabemos si la falta de asegurar la liberación del `mutex` es un bicho o una característica. Manifestar la poscondición lo habría dejado claro:
 
-    void manipulate(Record& r)    // postcondition: m is unlocked upon exit
+    void manipular(Registro& r)    // poscondición: m es desbloqueado tras salir
     {
         m.lock();
-        // ... no m.unlock() ...
+        // ... sin m.unlock() ...
     }
 
-The bug is now obvious (but only to a human reading comments)
+El bicho ahora es obvio (pero solo para un humano leyendo comentarios).
 
-Better still, use [RAII](#Rr-raii) to ensure that the postcondition ("the lock must be released") is enforced in code:
+Mejor aún, use [RAII](#Rr-raii) para asegurar que la poscondición («la cerradura debe ser liberada») sea impuesta en código:
 
-    void manipulate(Record& r)    // best
+    void manipular(Registro& r)    // lo mejor
     {
         lock_guard<mutex> _ {m};
         // ...
     }
 
-##### Note
+##### Nota
 
-Ideally, postconditions are stated in the interface/declaration so that users can easily see them.
-Only postconditions related to the users can be stated in the interface.
-Postconditions related only to internal state belongs in the definition/implementation.
+Idealmente, las poscondiciones se manifiestan en la interfaz/declaración para que los usuarios puedan verlas con facilidad. Solo las poscondiciones relacionadas con los usuarios pueden ser manifestadas en la interfaz. Las poscondiciones relacionadas solo con el estado interno pertenecen a la definición/implementación.
 
-##### Enforcement
+##### Aplicación
 
-(Not enforceable) This is a philosophical guideline that is infeasible to check
-directly in the general case. Domain specific checkers (like lock-holding
-checkers) exist for many toolchains.
+(No aplicable) Esta es una pauta filosófica que en el caso general es infactible de chequear. Existen chequeadores de dominio específico (como chequeadores de atado de cerradura) para muchas cadenas de herramientas.
 
-### <a name="Ri-ensures"></a>I.8: Prefer `Ensures()` for expressing postconditions
+### <a name="Ri-ensures"></a>I.8: Prefiera `Ensures()` para expresar poscondiciones
 
-##### Reason
+##### Razón
 
-To make it clear that the condition is a postcondition and to enable tool use.
+Para dejar claro que la condición es una poscondición y habilitar el uso de herramientas.
 
-##### Example
+##### Ejemplo
 
     void f()
     {
-        char buffer[MAX];
+        char amortiguador[MAX];
         // ...
-        memset(buffer, 0, MAX);
-        Ensures(buffer[0] == 0);
+        memset(amortiguador, 0, MAX);
+        Ensures(amortiguador[0] == 0);
     }
 
-##### Note
+##### Nota
 
-Postconditions can be stated in many ways, including comments, `if`-statements, and `assert()`.
-This can make them hard to distinguish from ordinary code, hard to update, hard to manipulate by tools, and may have the wrong semantics.
+Las poscondiciones pueden ser manifestadas de muchas maneras, incluyendo comentarios, sentencias-`if` y `assert()`. Esto puede hacer difícil distinguirlas del código ordinario, difícil de actualizar, difícil de manipular con herramientas y pueden tener la semántica equivocada.
 
-**Alternative**: Postconditions of the form "this resource must be released" are best expressed by [RAII](#Rr-raii).
+**Alternativa**: Las poscondiciones de la forma «este recurso debe ser liberado» se expresan lo mejor con [RAII](#Rr-raii).
 
-##### Note
+##### Nota
 
-Ideally, that `Ensures` should be part of the interface, but that's not easily done.
-For now, we place it in the definition (function body).
-Once language support becomes available (e.g., see the [contract proposal](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf)) we will adopt the standard version of preconditions, postconditions, and assertions.
+Idealmente, esa `Ensures` debería ser parte de la interfaz, pero eso no se hace con facilidad. Por ahora, la colocamos en la definición (cuerpo de función). Una vez el apoyo del lenguaje esté disponible (p. ej. vea la [propuesta de contrato](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0380r1.pdf)), adoptaremos la versión estándar de precondiciones, poscondiciones y aserciones.
 
-##### Enforcement
+##### Aplicación
 
-(Not enforceable) Finding the variety of ways postconditions can be asserted is not feasible. Warning about those that can be easily identified (`assert()`) has questionable value in the absence of a language facility.
+(No aplicable) Encontrar la variedad de formas en que las poscondiciones pueden ser asertadas no es factible. Advertir sobre las que puedan ser fácilmente identificadas (`assert()`) tiene un valor cuestionable en ausencia de una facilidad del lenguaje.
 
-### <a name="Ri-concepts"></a>I.9: If an interface is a template, document its parameters using concepts
+### <a name="Ri-concepts"></a>I.9: Si una interfaz es una plantilla, documente sus parámetros usando conceptos
 
-##### Reason
+##### Razón
 
-Make the interface precisely specified and compile-time checkable in the (not so distant) future.
+Haga la interfaz especificada con precisión y chequeable en tiempo de compilación en el futuro (no muy distante).
 
-##### Example
+##### Ejemplo
 
-Use the ISO Concepts TS style of requirements specification. For example:
+Use la especificación de requerimientos estilo-ET de conceptos ISO. Por ejemplo:
 
     template<typename Iter, typename Val>
     // requires InputIterator<Iter> && EqualityComparable<ValueType<Iter>>, Val>
@@ -1379,429 +1343,403 @@ Use the ISO Concepts TS style of requirements specification. For example:
         // ...
     }
 
-##### Note
+##### Nota
 
-Soon (maybe in 2017), most compilers will be able to check `requires` clauses once the `//` is removed.
-For now, the concept TS is supported only in GCC 6.1.
+Pronto (quizás en 2017), la mayoría de compiladores seran capaces de chequear las cláusulas `requires` una vez el `//` sea removido. Por ahora, la ET de conceptos es respaldada solo en GCC 6.1.
 
-**See also**: See [generic programming](#SS-GP) and [concepts](#SS-t-concepts).
+**Vea también**: [Programación genérica](#SS-GP) y [conceptos](#SS-t-concepts).
 
-##### Enforcement
+##### Aplicación
 
-(Not yet enforceable) A language facility is under specification. When the language facility is available, warn if any non-variadic template parameter is not constrained by a concept (in its declaration or mentioned in a `requires` clause).
+(No aplicable todavía) Una facilidad de lenguaje está bajo especificación. Cuando la facilidad del lenguaje esté disponible, advierta si algún parámetro de plantilla no-variario no está constreñido por un concepto (en su declaración o mencionado en una cláusula `requires`).
 
-### <a name="Ri-except"></a>I.10: Use exceptions to signal a failure to perform a required task
+### <a name="Ri-except"></a>I.10: Use excepciones para señalar el fallo de realizar una tarea requerida
 
-##### Reason
+##### Razón
 
-It should not be possible to ignore an error because that could leave the system or a computation in an undefined (or unexpected) state.
-This is a major source of errors.
+No debería ser posible ignorar un error porque eso podría dejar el sistema o la computación en un estado indefinido (o inesperado). Esto es una gran fuente de errores.
 
-##### Example
+##### Ejemplo
 
-    int printf(const char* ...);    // bad: return negative number if output fails
+    int printf(const char* ...);    // malo: devuelve número negativo si la salida falla
 
     template <class F, class ...Args>
-    // good: throw system_error if unable to start the new thread
+    // bien: arroja system_error en la incapacidad de comenzar un nuevo hilo
     explicit thread(F&& f, Args&&... args);
 
-##### Note
+##### Nota
 
-What is an error?
+¿Qué es un error?
 
-An error means that the function cannot achieve its advertised purpose (including establishing postconditions).
-Calling code that ignores the error could lead to wrong results or undefined systems state.
-For example, not being able to connect to a remote server is not by itself an error:
-the server can refuse a connection for all kinds of reasons, so the natural thing is to return a result that the caller always has to check.
-However, if failing to make a connection is considered an error, then a failure should throw an exception.
+Un error quiere decir que la función no puede cumplir su propósito advertido (incluyendo establecer sus poscondiciones). Llamar código que ignora el error puede llevar a resultados erróneos o estados de sistema indefinidos. Por ejemplo, no poder conectarse a un sistema remoto no es en sí un error: el servidor puede refutar la conexión por todo tipo de razones, así que lo natural es devolver un resultado que el llamador siempre tenga que chequear. Sin embargo, si fallar en establecer una conexión es considerado un error, entonces un fallo debería arrojar una excepción.
 
-##### Exception
+##### Excepción
 
-Many traditional interface functions (e.g., UNIX signal handlers) use error codes (e.g., `errno`) to report what are really status codes, rather than errors. You don't have a good alternative to using such, so calling these does not violate the rule.
+Muchas funciones interfaz tradicionales (p. ej., los gestores de señal de UNIX) usan códigos de error (p. ej., `errno`) para reportar lo que realmente son códigos de estado, en lugar de errores. No tiene una buena alternativa al usar estas, así que llamarlas no viola esta regla.
 
-##### Alternative
+##### Alternativa
 
-If you can't use exceptions (e.g. because your code is full of old-style raw-pointer use or because there are hard-real-time constraints), consider using a style that returns a pair of values:
+Si no puede usar excepciones (p. ej., porque su código está lleno de usos de punteros crudos al viejo estilo o porque hay constreñimientos de tiempo real crítico), considere usar un estilo que devuelva un par de valores:
 
     int val;
-    int error_code;
-    tie(val, error_code) = do_something();
-    if (error_code == 0) {
-        // ... handle the error or exit ...
+    int codigo_de_error;
+    tie(val, codigo_de_error) = hacer_algo();
+    if (codigo_de_error == 0) {
+        // ... trate el error o salga ...
     }
-    // ... use val ...
+    // ... usar val ...
 
-This style unfortunately leads to uninitialized variable.
-A facility [structured bindings](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0144r1.pdf) to deal with that will become available in C++17.
+Este estilo desafortunadamente lleva a variables ininicializadas. La facilidad [ataduras estructuradas](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2016/p0144r1.pdf) para lidiar con eso estará disponible en C++17.
 
-    [val, error_code] = do_something();
-    if (error_code == 0) {
-        // ... handle the error or exit ...
+    [val, codigo_de_error] = do_something();
+    if (codigo_de_error == 0) {
+        // ... trate el error o salga ...
     }
-    // ... use val ...
+    // ... usar val ...
 
+##### Nota
 
-##### Note
+No consideramos el «desempeño» una razón válida para no usar excepciones.
 
-We don't consider "performance" a valid reason not to use exceptions.
+* A menudo, el chequeado y la gestión explícita de errores consume tanto tiempo y espacio como la gestión de excepciones.
+* A menudo, el código más limpio otorga mejor rendimiento con excepciones (simplificando el rastreo de caminos a través del programa y su optimización).
+* Una buena regla para el código de rendimiento crítico es mover el chequeo afuera de la parte crítica del código ([checking](#Rper-checking)).
+* Al paso del tiempo, el código más regular es mejor optimizado.
+* Siempre [mida](#Rper-measure) cuidadosamente antes de hacer reclamos de rendimiento.
 
-* Often, explicit error checking and handling consume as much time and space as exception handling.
-* Often, cleaner code yields better performance with exceptions (simplifying the tracing of paths through the program and their optimization).
-* A good rule for performance critical code is to move checking outside the critical part of the code ([checking](#Rper-checking)).
-* In the longer term, more regular code gets better optimized.
-* Always carefully [measure](#Rper-measure) before making performance claims.
+**Vea también**: [I.5](#Ri-pre) e [I.7](#Ri-post) para el reportado de violaciones de pre- y poscondiciones.
 
-**See also**: [I.5](#Ri-pre) and [I.7](#Ri-post) for reporting precondition and postcondition violations.
+##### Aplicación
 
-##### Enforcement
+* (No aplicable) Esta es una pauta filosófica que es infactible de chequear directamente.
+* Busque `errno`.
 
-* (Not enforceable) This is a philosophical guideline that is infeasible to check directly.
-* Look for `errno`.
+### <a name="Ri-raw"></a>I.11: Nunca transfiera posesión con un puntero crudo (`T*`)
 
-### <a name="Ri-raw"></a>I.11: Never transfer ownership by a raw pointer (`T*`)
+##### Razón
 
-##### Reason
+Si hay alguna duda de si el llamador o el receptor posee un objeto, ocurrirán fugas o destrucciones prematuras.
 
-If there is any doubt whether the caller or the callee owns an object, leaks or premature destruction will occur.
+##### Ejemplo
 
-##### Example
+Considere:
 
-Consider:
-
-    X* compute(args)    // don't
+    X* compute(args)    // no haga
     {
         X* res = new X{};
         // ...
         return res;
     }
 
-Who deletes the returned `X`? The problem would be harder to spot if compute returned a reference.
-Consider returning the result by value (use move semantics if the result is large):
+¿Quién elimina la `X` devuelta? El problema sería más difícil de distinguir si compute devolviera una referencia. Considere devolver el resultado por valor (use la semántica mueve si el resultado es grande):
 
-    vector<double> compute(args)  // good
+    vector<double> compute(args)  // bien
     {
         vector<double> res(10000);
         // ...
         return res;
     }
 
-**Alternative**: Pass ownership using a "smart pointer", such as `unique_ptr` (for exclusive ownership) and `shared_ptr` (for shared ownership).
-However that is less elegant and less efficient unless reference semantics are needed.
+**Alternativa**: Pase posesión usando un «puntero inteligente», como `unique_ptr` (para posesión exclusiva) y `shared_ptr` (para posesión compartida). Sin embargo, eso es menos elegante y menos eficiente al menos que necesite la semántica de referencia.
 
-**Alternative**: Sometimes older code can't be modified because of ABI compatibility requirements or lack of resources.
-In that case, mark owning pointers using `owner` from [guideline support library](#S-gsl):
+**Alternativa**: A veces, el código más viejo no puede ser modificado por requisitos de compatibilidad de ABI o falta de recursos. En ese caso, marque los punteros poseedores usando `owner` de la [biblioteca de apoyo a las pautas](#S-gsl):
 
-    owner<X*> compute(args)    // It is now clear that ownership is transferred
+    owner<X*> compute(args)    // Está claro que la posesión es transferida
     {
         owner<X*> res = new X{};
         // ...
         return res;
     }
 
-This tells analysis tools that `res` is an owner.
-That is, its value must be `delete`d or transferred to another owner, as is done here by the `return`.
+Esto le dice a las herramientas de análisis que `res` es un dueño. Es decir, su valor debe ser hecho `delete` o transferido a otro dueño, como se hace aquí por el `return`.
 
-`owner` is used similarly in the implementation of resource handles.
+`owner` es usado de manera similar en la implementación de administradores de recursos.
 
-##### Note
+##### Nota
 
-Every object passed as a raw pointer (or iterator) is assumed to be owned by the
-caller, so that its lifetime is handled by the caller. Viewed another way:
-ownership transferring APIs are relatively rare compared to pointer-passing APIs,
-so the default is "no ownership transfer."
+Se asume que cada objeto pasado por puntero crudo (o iterador) es poseído por el llamador, por lo que su vida es gestionada por el llamador. Visto de otra manera: las API de transferencia de posesión son relativamente raras comparadas con las API de pasar punteros, por lo que el por defecto es «no transfiera posesión».
 
-**See also**: [Argument passing](#Rf-conventional) and [value return](#Rf-T-return).
+**Vea también**: [Pasado de argumentos](#Rf-conventional) y [valor de retorno](#Rf-T-return).
 
-##### Enforcement
+##### Aplicación
 
-* (Simple) Warn on `delete` of a raw pointer that is not an `owner`.
-* (Simple) Warn on failure to either `reset` or explicitly `delete` an `owner` pointer on every code path.
-* (Simple) Warn if the return value of `new` or a function call with return value of pointer type is assigned to a raw pointer.
+* (Simple) Advierta el `delete` de un puntero crudo que no sea un `owner`.
+* (Simple) Advierta la falta de hacer `reset` o `delete` explícito a un puntero `owner` en cada camino del código.
+* (Simple) Advierta si el valor de retorno de `new` o una llamada a función con un valor de retorno de tipo puntero es asignado a un puntero crudo.
 
-### <a name="Ri-nullptr"></a>I.12: Declare a pointer that must not be null as `not_null`
+### <a name="Ri-nullptr"></a>I.12: Declare un puntero que no debe ser nulo como `not_null`
 
-##### Reason
+##### Razón
 
-To help avoid dereferencing `nullptr` errors.
-To improve performance by avoiding redundant checks for `nullptr`.
+Ayuda a evitar errores por dereferenciar `nullptr`. Para mejorar el rendimiento al evitar chequeos redundantes de `nullptr`.
 
-##### Example
+##### Ejemplo
 
-    int length(const char* p);            // it is not clear whether length(nullptr) is valid
+    int longitud(const char* p);            // no está claro si longitud(nullptr) es válido
 
-    length(nullptr);                      // OK?
+    longitud(nullptr);                      // ¿bien?
 
-    int length(not_null<const char*> p);  // better: we can assume that p cannot be nullptr
+    int longitud(not_null<const char*> p);  // mejor: podemos asumir que p no puede ser nullptr
 
-    int length(const char* p);            // we must assume that p can be nullptr
+    int longitud(const char* p);            // debemos asumir que p puede ser nullptr
 
-By stating the intent in source, implementers and tools can provide better diagnostics, such as finding some classes of errors through static analysis, and perform optimizations, such as removing branches and null tests.
+Al manifestar la intención en el código, los implementadores y herramientas pueden proveer mejores diagnósticos, como encontrar algunas clases de errores mediante análisis estático, y realizar optimizaciones, como remover ramas y pruebas de nulo.
 
-##### Note
+##### Nota
 
-`not_null` is defined in the [guideline support library](#S-gsl)
+`not_null` está definido en la [biblioteca de apoyo a las pautas](#S-gsl).
 
-##### Note
+##### Nota
 
-The assumption that the pointer to `char` pointed to a C-style string (a zero-terminated string of characters) was still implicit, and a potential source of confusion and errors. Use `zstring` in preference to `const char*`.
+La asunción de que el puntero a `char` apunta a una cadena estilo-C (una cadena de caracteres terminada en cero) seguía siendo implícita, y una fuente potencial de confusión y errores. Use `zstring` en preferencia a `const char*`.
 
-    // we can assume that p cannot be nullptr
-    // we can assume that p points to a zero-terminated array of characters
-    int length(not_null<zstring> p);
+    // podemos asumir que p no puede ser nullptr
+    // podemos asumir que p apunta a una cadena de caracteres terminada en cero
+    int longitud(not_null<zstring> p);
 
-Note: `length()` is, of course, `std::strlen()` in disguise.
+Nota: `longitud()` es, por supuesto, `std::strlen()` disfrazada.
 
-##### Enforcement
+##### Aplicación
 
-* (Simple) ((Foundation)) If a function checks a pointer parameter against `nullptr` before access, on all control-flow paths, then warn it should be declared `not_null`.
-* (Complex) If a function with pointer return value ensures it is not `nullptr` on all return paths, then warn the return type should be declared `not_null`.
+* (Simple) ((Fundamento)) Si una función chequea un parámetro puntero contra `nullptr` antes de accederlo en todos los caminos del flujo de control, advierta que debería ser declarado `not_null`.
+* (Complejo) Si una función con un valor de retorno puntero asegura que no es `nullptr` en todos los caminos de retorno, advierta que el tipo de retorno debería ser declarado `not_null`.
 
-### <a name="Ri-array"></a>I.13: Do not pass an array as a single pointer
+### <a name="Ri-array"></a>I.13: No pase una colección como un solo puntero
 
-##### Reason
+##### Razón
 
- (pointer, size)-style interfaces are error-prone. Also, a plain pointer (to array) must rely on some convention to allow the callee to determine the size.
+Las interfaces del estilo (puntero, conteo) son propensas a errores. Además, un puntero plano (a colección) debe depender de alguna convención para permitir al receptor determinar su tamaño.
 
-##### Example
+##### Ejemplo
 
-Consider:
+Considere:
 
-    void copy_n(const T* p, T* q, int n); // copy from [p:p+n) to [q:q+n)
+    void copia_n(const T* p, T* q, int n); // copia de [p:p+n) a [q:q+n)
 
-What if there are fewer than `n` elements in the array pointed to by `q`? Then, we overwrite some probably unrelated memory.
-What if there are fewer than `n` elements in the array pointed to by `p`? Then, we read some probably unrelated memory.
-Either is undefined behavior and a potentially very nasty bug.
+¿Y si hay menos de `n` elementos en la colección apuntada por `q`? Entonces, probablemente sobrescribimos memoria no relacionada. ¿Y si hay menos de `n` elementos en la colección apuntada por `p`? Entonces, probablemente leemos memoria no relacionada. Ambos son comportamiento indefinido y potencialmente un bicho muy asqueroso.
 
-##### Alternative
+##### Alternativa
 
-Consider using explicit spans:
+Considere usar tramos explícitos:
 
-    void copy(span<const T> r, span<T> r2); // copy r to r2
+    void copia(span<const T> r, span<T> r2); // copia r a r2
 
-##### Example, bad
+##### Ejemplo, malo
 
-Consider:
+Considere:
 
-    void draw(Shape* p, int n);  // poor interface; poor code
-    Circle arr[10];
+    void dibujar(Forma* p, int n);  // interfaz pobre; código pobre
+    Circulo col[10];
     // ...
-    draw(arr, 10);
+    dibujar(col, 10);
 
-Passing `10` as the `n` argument may be a mistake: the most common convention is to assume \[`0`:`n`) but that is nowhere stated. Worse is that the call of `draw()` compiled at all: there was an implicit conversion from array to pointer (array decay) and then another implicit conversion from `Circle` to `Shape`. There is no way that `draw()` can safely iterate through that array: it has no way of knowing the size of the elements.
+Pasar `10` como el argumento `n` podría ser un error: la convención más común es asumir \[`0`:`n`), pero eso no se manifiesta en ningún lugar. Peor ha sido que la llamada a `dibujar()` haya compilado: hubo una conversión implícita de colección a puntero (decaída de colección) y entonces otra conversión implícita de `Circulo` a `Forma`. No hay manera de que `dibujar()` pueda iterar de forma segura por la colección: no tiene forma de conocer el tamaño de los elementos.
 
-**Alternative**: Use a support class that ensures that the number of elements is correct and prevents dangerous implicit conversions. For example:
+**Alternativa**: Use una clase de apoyo que asegure que el número de elementos es correcto y prevenga conversiones implícitas peligrosas. Por ejemplo:
 
-    void draw2(span<Circle>);
-    Circle arr[10];
+    void dibujar2(span<Circulo>);
+    Circulo arr[10];
     // ...
-    draw2(span<Circle>(arr));  // deduce the number of elements
-    draw2(arr);    // deduce the element type and array size
+    dibujar2(span<Circulo>(arr));  // deduce el número de elementos
+    dibujar2(arr);    // deduce el tipo del elemento y tamaño de la colección
 
-    void draw3(span<Shape>);
-    draw3(arr);    // error: cannot convert Circle[10] to span<Shape>
+    void dibujar3(span<Forma>);
+    dibujar3(arr);    // error: no puede convertir Circulo[10] a span<Forma>
 
-This `draw2()` passes the same amount of information to `draw()`, but makes the fact that it is supposed to be a range of `Circle`s explicit. See ???.
+Este `dibujar2()` pasa la misma cantidad de información a `dibujar()`, pero hace explícito el hecho de que se supone que sea un rango de `Circulo`s. See ???.
 
-##### Exception
+##### Excepción
 
-Use `zstring` and `czstring` to represent a C-style, zero-terminated strings.
-But when doing so, use `string_span` from the [GSL](#GSL) to prevent range errors.
+Use `zstring` y `czstring` para representar cadenas estilo-C terminadas en cero. Pero cuando lo haga, use `string_span` de la [GSL](#GSL) para prevenir errores de rango.
 
-##### Enforcement
+##### Aplicación
 
-* (Simple) ((Bounds)) Warn for any expression that would rely on implicit conversion of an array type to a pointer type. Allow exception for zstring/czstring pointer types.
-* (Simple) ((Bounds)) Warn for any arithmetic operation on an expression of pointer type that results in a value of pointer type. Allow exception for zstring/czstring pointer types.
+* (Simple) ((Bordes)) Advierta sobre cualquier expresión que dependería en una conversión implícita de un tipo de colección a un tipo de puntero. Permita una excepción para los tipos puntero zstring/czstring.
+* (Simple) ((Bordes)) Advierta sobre cualquier operación aritmética en una expresión de tipo puntero que resulte en un valor de tipo puntero. Permita una excepción para los tipos puntero zstring/czstring.
 
-### <a name="Ri-global-init"></a>I.22: Avoid complex initialization of global objects
+### <a name="Ri-global-init"></a>I.22: Evite la inicialización compleja de objetos globales
 
 ##### Reason
 
-Complex initialization can lead to undefined order of execution.
+La inicialización compleja puede llevar a un orden de ejecución indefinido.
 
-##### Example
+##### Ejemplo
 
-    // file1.c
+    // archivo1.c
 
     extern const X x;
 
-    const Y y = f(x);   // read x; write y
+    const Y y = f(x);   // lee x; escribe y
 
-    // file2.c
+    // archivo2.c
 
     extern const Y y;
 
-    const X x = g(y);   // read y; write x
+    const X x = g(y);   // lee y; escribe x
 
-Since `x` and `y` are in different translation units the order of calls to `f()` and `g()` is undefined;
-one will access an uninitialized `const`.
-This particular example shows that the order-of-initialization problem for global (namespace scope) objects is not limited to global *variables*.
+Ya que `x` y `y` están en diferentes unidades de traducción, el orden de las llamadas a `f()` y `g()` es indefinido; una accederá una `const` ininicializada. Este ejemplo particular demuestra que el problema de orden-de-inicialización para objetos globales (en ámbito de espacio de nombre) no se limita a las *variables* globales.
 
-##### Note
+##### Nota
 
-Order of initialization problems become particularly difficult to handle in concurrent code.
-It is usually best to avoid global (namespace scope) objects altogether.
+Los problemas de orden de inicialización se vuelven particularmente difíciles de tratar en código concurrente. Usualmente lo mejor es evitar completamente los objetos globales (en ámbito de espacio de nombre).
 
-##### Enforcement
+##### Aplicación
 
-* Flag initializers of globals that call non-`constexpr` functions
-* Flag initializers of globals that access `extern` objects
+* Marque inicializadores de globales que llaman funciones no-`constexpr`.
+* Marque inicializadores de globales que accedan objetos `extern`.
 
-### <a name="Ri-nargs"></a>I.23: Keep the number of function arguments low
+### <a name="Ri-nargs"></a>I.23: Mantenga el número de argumentos de función bajo
 
-##### Reason
+##### Razón
 
-Having many arguments opens opportunities for confusion. Passing lots of arguments is often costly compared to alternatives.
+Tener muchos argumentos abre oportunidades para confusión. Pasar muchos argumentos a menudo es costoso comparado con alternativas.
 
-##### Example
+##### Ejemplo
 
-The standard-library `merge()` is at the limit of what we can comfortably handle
+`merge()` de la biblioteca estándar está en el límite de lo que podemos tratar con comodidad:
 
     template<class InputIterator1, class InputIterator2, class OutputIterator, class Compare>
     OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
                          InputIterator2 first2, InputIterator2 last2,
                          OutputIterator result, Compare comp);
 
-Here, we have four template arguments and six function arguments.
-To simplify the most frequent and simplest uses, the comparison argument can be defaulted to `<`:
+Aquí, tenemos cuatro argumentos de plantilla y seis argumentos de función. Para simplificar los usos más frecuentes y simples, el argumento de comparación se deja a `<` por defecto.
 
     template<class InputIterator1, class InputIterator2, class OutputIterator>
     OutputIterator merge(InputIterator1 first1, InputIterator1 last1,
                          InputIterator2 first2, InputIterator2 last2,
                          OutputIterator result);
 
-This doesn't reduce the total complexity, but it reduces the surface complexity presented to many users.
-To really reduce the number of arguments, we need to bundle the arguments into higher-level abstractions:
+Esto no recude la complejidad total, pero reduce la complejidad superficial presentada a muchos usuarios. Para reducir realmente el número de argumentos, necesitamos empaquetar los argumentos en abstracciones de más alto nivel:
 
     template<class InputRange1, class InputRange2, class OutputIterator>
     OutputIterator merge(InputRange1 r1, InputRange2 r2, OutputIterator result);
 
-Grouping arguments into "bundles" is a general technique to reduce the number of arguments and to increase the opportunities for checking.
+Agrupar argumentos en «paquetes» es una técnica general para reducir el número de argumentos e incrementar las oportunidades de chequeado.
 
-Alternatively, we could use concepts (as defined by the ISO TS) to define the notion of three types that must be usable for merging:
+Alternativamente, podríamos usar conceptos (como se definen en la ET de ISO) para definir la noción de tres tipos que deben ser utilizables para unir:
 
     Mergeable{In1 In2, Out}
     OutputIterator merge(In1 r1, In2 r2, Out result);
 
-##### Note
+##### Nota
 
-How many arguments are too many? Four arguments is a lot.
-There are functions that are best expressed with four individual arguments, but not many.
+¿Cuántos argumentos son demasiados? Cuatro argumentos es mucho. Hay funciones que se expresan lo mejor con cuatro argumentos, pero no muchas.
 
-**Alternative**: Group arguments into meaningful objects and pass the objects (by value or by reference).
+**Alternativa**: Agrupe elementos en objetos significativos y pase los objetos (por valor o por referencia).
 
-**Alternative**: Use default arguments or overloads to allow the most common forms of calls to be done with fewer arguments.
+**Alternative**: Use argumentos por defecto o sobrecargas para permitir que las formas de llamada más comunes sean hechas con menos argumentos.
 
-##### Enforcement
+##### Aplicación
 
-* Warn when a functions declares two iterators (including pointers) of the same type instead of a range or a view.
-* (Not enforceable) This is a philosophical guideline that is infeasible to check directly.
+* Advierta cuando una función declara dos iteradores (incluyendo punteros) del mismo tipo en lugar de un rango o una vista.
+* (No aplicable) Esta es una pauta filosófica que es infactible de chequear directamente.
 
-### <a name="Ri-unrelated"></a>I.24: Avoid adjacent unrelated parameters of the same type
+### <a name="Ri-unrelated"></a>I.24: Evite parámetros adyacentes no relacionados del mismo tipo
 
-##### Reason
+##### Razón
 
-Adjacent arguments of the same type are easily swapped by mistake.
+Los argumentos adyacentes del mismo tipo son fácilmente intercambiados por error.
 
-##### Example, bad
+##### Ejemplo, malo
 
-Consider:
+Considere:
 
-    void copy_n(T* p, T* q, int n);  // copy from [p:p+n) to [q:q+n)
+    void copia_n(T* p, T* q, int n);  // copia de [p:p+n) a [q:q+n)
 
-This is a nasty variant of a K&R C-style interface. It is easy to reverse the "to" and "from" arguments.
+Esta es una variante asquerosa de una interfaz estilo-K&R C. Es fácil revertir los argumentos «desde» y «hacia».
 
-Use `const` for the "from" argument:
+Use `const` para el argumento «desde»:
 
-    void copy_n(const T* p, T* q, int n);  // copy from [p:p+n) to [q:q+n)
+    void copia_n(const T* p, T* q, int n);  // copia de [p:p+n) a [q:q+n)
 
-##### Exception
+##### Excepción
 
-If the order of the parameters is not important, there is no problem:
+Si el orden de los parámetros no importa, no hay problema:
 
     int max(int a, int b);
 
-##### Alternative
+##### Alternativa
 
-Don't pass arrays as pointers, pass an object representing a range (e.g., a `span`):
+No pase colecciones como punteros, pase un objeto representando un rango (p. ej., un `span`):
 
-    void copy_n(span<const T> p, span<T> q);  // copy from p to q
+    void copia_n(span<const T> p, span<T> q);  // copia de p a q
 
-##### Alternative
+##### Alternativa
 
-Define a `struct` as the parameter type and name the fields for those parameters accordingly:
+Defina un `struct` como el tipo de parámetro y nombre los campos para esos parámetros como corresponda:
 
-    struct SystemParams {
-        string config_file;
-        string output_path;
-        seconds timeout;
+    struct ParamsDeSistema {
+        string archivo_config;
+        string camino_de_salida;
+        seconds tiempo_muerto;
     };
-    void initialize(SystemParams p);
+    void inicializar(ParamsDeSistema p);
 
-This has a tendency to make invocations of this clear to future readers, as the parameters
-are often filled in by name at the call site.
+Esto tiene la tendencia de hacer las invocaciones de esto claras a futuros lectores, ya que los parámetros a menudo se llenan por nombre en el lugar de llamada.
 
-##### Enforcement
+##### Aplicación
 
-(Simple) Warn if two consecutive parameters share the same type.
+(Simple) Advierta si dos parámetros consecutivos comparten el mismo tipo.
 
-### <a name="Ri-abstract"></a>I.25: Prefer abstract classes as interfaces to class hierarchies
+### <a name="Ri-abstract"></a>I.25: Prefiera clases abstractas como interfaces de jerarquías de clases
 
-##### Reason
+##### Razón
 
-Abstract classes are more likely to be stable than base classes with state.
+Es más posible que las clases abstractas sean más estables que clases base con estado.
 
-##### Example, bad
+##### Ejemplo, malo
 
-You just knew that `Shape` would turn up somewhere :-)
+Ya sabías que el ejemplo de `Forma` se aparecería en algún lugar. :-)
 
-    class Shape {  // bad: interface class loaded with data
+    class Forma {  // malo: clase interfaz cargada de datos
     public:
-        Point center() const { return c; }
-        virtual void draw() const;
-        virtual void rotate(int);
+        Punto centro() const { return c; }
+        virtual void dibujar() const;
+        virtual void rotar(int);
         // ...
     private:
-        Point c;
-        vector<Point> outline;
+        Punto c;
+        vector<Punto> contorno;
         Color col;
     };
 
-This will force every derived class to compute a center -- even if that's non-trivial and the center is never used. Similarly, not every `Shape` has a `Color`, and many `Shape`s are best represented without an outline defined as a sequence of `Point`s. Abstract classes were invented to discourage users from writing such classes:
+Esto forzará a cada clase derivada a computar el centro -- aún si eso no es trivial y el centro nunca se usa. Similarmente, no toda `Forma` tiene un `Color`, y muchas `Forma`s se representan lo mejor sin un contorno definido como una secuencia de `Punto`s. Las clases abstractas se inventaron para desalentar a los usuarios de escribir tales clases:
 
-    class Shape {    // better: Shape is a pure interface
+    class Forma {    // mejor: Forma es una interfaz pura
     public:
-        virtual Point center() const = 0;   // pure virtual function
-        virtual void draw() const = 0;
-        virtual void rotate(int) = 0;
+        virtual Point centro() const = 0;   // función virtual pura
+        virtual void dibujar() const = 0;
+        virtual void rotar(int) = 0;
         // ...
-        // ... no data members ...
+        // ... sin datos miembro ...
     };
 
-##### Enforcement
+##### Aplicación
 
-(Simple) Warn if a pointer to a class `C` is assigned to a pointer to a base of `C` and the base class contains data members.
+(Simple) Advierta si un puntero a una clase `C` se asigna a un puntero a una base de `C` y esa clase base contiene datos miembro.
 
-### <a name="Ri-abi"></a>I.26: If you want a cross-compiler ABI, use a C-style subset
+### <a name="Ri-abi"></a>I.26: Si quiere ABI a través de compiladores, use un subset estilo-C
 
-##### Reason
+##### Razón
 
-Different compilers implement different binary layouts for classes, exception handling, function names, and other implementation details.
+Compiladores diferentes implementan diferentes arreglos binarios para las clases, gestión de excepciones, nombre de funciones y otros detalles de implementación.
 
-##### Exception
+##### Excepción
 
-You can carefully craft an interface using a few carefully selected higher-level C++ types. See ???.
+Con cuidado puede crear una interfaz usando unos cuantos tipos de C++ de más alto nivel seleccionados cuidadosamente.
 
-##### Exception
+##### Excepción
 
-Common ABIs are emerging on some platforms freeing you from the more draconian restrictions.
+Están emergiendo ABI comunes en algunas plataformas, liberándolo de las restricciones más draconianas.
 
-##### Note
+##### Nota
 
-If you use a single compiler, you can use full C++ in interfaces. That may require recompilation after an upgrade to a new compiler version.
+Si usa un solo compilador, puede usar C++ completo en las interfaces. Eso podría requerir recompilar después de actualizar a una nueva versión de compilador.
 
-##### Enforcement
+##### Aplicación
 
-(Not enforceable) It is difficult to reliably identify where an interface forms part of an ABI.
+(No aplicable) Es difícil identificar con seguridad dónde una interfaz forma parte de una ABI.
 
 # <a name="S-functions"></a>F: Functions
 
